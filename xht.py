@@ -1,10 +1,11 @@
 import sys
+sys.dont_write_bytecode = True
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import psutil
 import win32gui
-import sys, os, subprocess
+import os, subprocess
 
 import API
 import LogMaker

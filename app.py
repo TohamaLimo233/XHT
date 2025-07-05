@@ -5,6 +5,10 @@ import win32event
 import winerror
 from PySide6.QtWidgets import QMessageBox,QApplication
 
+# 设置不生成 .pyc 文件
+sys.dont_write_bytecode = True
+
+
 if __name__ == '__main__':
     # 单实例检测
     mutex = win32event.CreateMutex(None, False, "XHT_TTATE_MUTEX")
