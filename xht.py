@@ -8,6 +8,7 @@ import sys, os, subprocess
 
 import API
 import LogMaker
+import Config
 
 
 print(" __   ___    _ _______ ")
@@ -27,6 +28,7 @@ class xht(QWidget):
         sys.excepthook = self.handle_exception
         
         self.weather_api = API.WeatherAPI()
+        self.config = Config.Config().load_config()
         self.background_color = QColor(0, 0, 0)
         self.global_layout = None # 全局布局
         self.ui_type  = "original" #预设UI种类
@@ -101,7 +103,7 @@ class xht(QWidget):
 
     def handle_exception(self, exc_type, exc_value, traceback):
         error_msg = f"{exc_type.__name__}: {exc_value}"
-        log.critical(f"严重错误: {error_msg}", exc_info=True)
+        log.cirical(f"严重错误: {error_msg}", exc_info=True)
         
         # 在主线程显示错误窗口
         QTimer.singleShot(0, lambda: self.show_error_window(error_msg))

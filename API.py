@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 
 class WeatherAPI():
@@ -27,7 +28,7 @@ class WeatherAPI():
 
     def GetCityMap(self):
         try:           
-            with open("res/weather/weatherlib.data", "r", encoding="utf-8") as f:
+            with open(file=os.path.join(os.path.dirname(__file__), "res", "weather", "weatherlib.data"), mode="r", encoding="utf-8") as f:
                 content = f.read()
                 import base64
                 decoded_content = base64.b64decode(content).decode("utf-8")
@@ -57,7 +58,7 @@ class WeatherAPI():
             if "current" in data:
                 weather_code = int(data["current"]["weather"])
                 try:
-                    with open("res/weather/weather_status.data", "r", encoding="utf-8") as f:
+                    with open(file=os.path.join(os.path.dirname(__file__), "res", "weather", "weather_status.data"), mode="r", encoding="utf-8") as f:
                         weather_status = json.load(f)
                         weather_desc = next((item["wea"] for item in weather_status["weatherinfo"] if item["code"] == weather_code), "未知")
                 except (FileNotFoundError, json.JSONDecodeError) as e:

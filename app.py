@@ -37,5 +37,5 @@ if __name__ == '__main__':
         window.show()
         sys.exit(app.exec())
     except Exception as e:
-        QMessageBox.critical("错误", str(e))
+        print(e)
         sys.exit(1)
