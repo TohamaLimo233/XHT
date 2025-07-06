@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSyste
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import psutil
-import win32gui
+import pygetwindow as gw
 import os, subprocess
 
 import API
@@ -29,7 +29,7 @@ class xht(QWidget):
         sys.excepthook = self.handle_exception
         
         self.weather_api = API.WeatherAPI()
-        self.config = Config.Config().load_config()
+        #self.config = Config.Config().load_config()
         self.background_color = QColor(0, 0, 0)
         self.global_layout = None # 全局布局
         self.ui_type  = "original" #预设UI种类
@@ -47,7 +47,7 @@ class xht(QWidget):
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("res/icon/tray_de.ico"))  # 需要准备图标文件
+        self.tray_icon.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "res", "icon", "tray_de.ico")))  # 需要准备图标文件
         self.tray_icon.setToolTip("小黑条-正常运行中")
         self.tray_icon.activated.connect(self.handle_tray_activation)
           
@@ -76,12 +76,15 @@ class xht(QWidget):
 
     def quit_app(self):
         log.info("程序已退出")
-        subprocess.Popen(["taskkill", "/F", "/PID", str(os.getpid())])
+        try:
+            subprocess.Popen(["taskkill", "/F", "/PID", str(os.getpid())])
+        except:
+            subprocess.Popen(["kill", str(os.getpid())])
 
     def initUI(self):
         log.info("程序正在启动")
         self.setMinimumSize(120, 16)
-        self.setMaximumSize(500, 400)
+        self.setMaximumSize(600, 400)
         self.setGeometry(0, 8, 120, 16)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -149,7 +152,7 @@ class xht(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(QBrush(self.background_color))  # 使用可配置颜色
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 22, 22)
+        painter.drawRoundedRect(self.rect(), 32, 32)
 
     def update_time(self):
         if self.ui_type  == "original":
@@ -334,20 +337,33 @@ class xht(QWidget):
         event.ignore()  # 忽略关闭事件，阻止窗口被关闭
 
     def fcd(self):
-        hwnd = win32gui.GetForegroundWindow()
-        if not hwnd:
-            return
-        self.title = win32gui.GetWindowText(hwnd)
-        if any(keyword in self.title for keyword in self.fullscreen_apps):
-            if not self.is_hidden and not self.auto_hide:
-                log.info(f"事件：指定的程序触发隐藏")
-                self.auto_hide = True
-                self.hide_with_animation()
-        else:
-            if self.is_hidden and self.auto_hide:
-                log.info(f"事件：指定的程序触发显示")
-                self.auto_hide = False
-                self.show_with_animation()
+        # 替换win32gui实现跨平台窗口检测
+        try:
+            active_window = gw.getActiveWindow()
+            if not active_window:
+                return
+            
+            # 增加属性访问异常处理和类型校验
+            try:
+                self.title = active_window.title
+            except AttributeError:
+                self.title = ""
+                
+            if not isinstance(self.title, str):
+                return
+                
+            if any(keyword in self.title for keyword in self.fullscreen_apps):
+                if not self.is_hidden and not self.auto_hide:
+                    log.info(f"事件：指定的程序触发隐藏")
+                    self.auto_hide = True
+                    self.hide_with_animation()
+            else:
+                if self.is_hidden and self.auto_hide:
+                    log.info(f"事件：指定的程序触发显示")
+                    self.auto_hide = False
+                    self.show_with_animation()
+        except Exception as e:
+            log.warn(f"窗口检测异常: {str(e)}")
 
     def scd(self):
         running_processes = []
