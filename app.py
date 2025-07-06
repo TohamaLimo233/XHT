@@ -1,7 +1,5 @@
 import xht
 import sys
-import os
-from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QApplication
 
 # 设置不生成 .pyc 文件

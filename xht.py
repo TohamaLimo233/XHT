@@ -1,11 +1,11 @@
 import sys
-sys.dont_write_bytecode = True
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import psutil
 import pygetwindow as gw
 import os, subprocess
+import platform
 
 import API
 import LogMaker
@@ -20,6 +20,12 @@ print("  / . \\| |  | |  | |   ")
 print(" /_/ \\_\\_|  |_|  |_|   ")
 
 log=LogMaker.logger()
+
+log.info(f"""
+         运行平台：{platform.system()}
+         OS版本：{platform.release()}
+         Python版本：{platform.python_version()}
+         PID：{os.getpid()}""")
 
 
 class xht(QWidget):
@@ -152,7 +158,10 @@ class xht(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(QBrush(self.background_color))  # 使用可配置颜色
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(self.rect(), 32, 32)
+        if platform.system() == "Windows":
+            painter.drawRoundedRect(self.rect(), 24, 24)
+        if platform.system() == "Darwin":
+            painter.drawRoundedRect(self.rect(), 32, 32)
 
     def update_time(self):
         if self.ui_type  == "original":
