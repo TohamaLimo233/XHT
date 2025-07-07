@@ -1,4 +1,3 @@
-![center](xhtlogo.ico)
 <h1 align="center">小黑条</h1>
 <p align="center" class="shields">
     <a href="https://github.com/GuzhMtangeroou/XHT/issues" style="text-decoration:none">
@@ -14,4 +13,12 @@
         <img src="https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=lightrey&style=for-the-badge" alt="GitHub license"/>
     </a>
     <br>
+
+适配班级大屏的信息显示栏
+<br>功能列表
+| 功能| 状态|备注
+| :--------  | :-----|:-----
+| 时间、天气显示 |✅ |
+| 自动隐藏 | ✅ |
+|设置|❌
 
