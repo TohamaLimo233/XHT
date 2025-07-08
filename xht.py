@@ -48,7 +48,7 @@ class xht(QWidget):
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
         self.is_sleepy = False #班主任视奸状态
-        self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板","Microsoft Edge"]  # 全屏检测关键词列表
+        self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
         self.sleepy_apps=["AtHomeVideoStreamer"] #视奸应用关键词列表
         
         # 添加系统托盘图标支持
