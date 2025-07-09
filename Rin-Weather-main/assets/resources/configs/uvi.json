@@ -1,0 +1,37 @@
+{
+  "0-2": {
+    "level": 1,
+    "category": "Low",
+    "color": "#3EA72D",
+    "impact": "Low risk from UV rays for the average person.",
+    "advice": "Wear sunglasses on bright days. SPF 15+ if needed."
+  },
+  "3-5": {
+    "level": 2,
+    "category": "Moderate",
+    "color": "#FFF300",
+    "impact": "Moderate risk of harm from unprotected sun exposure.",
+    "advice": "Stay in shade near midday. Use SPF 50+ and wear a hat."
+  },
+  "6-7": {
+    "level": 3,
+    "category": "High",
+    "color": "#F18B00",
+    "impact": "High risk of harm from unprotected sun exposure.",
+    "advice": "Avoid midday sun. Use full protection: hat, sunglasses, SPF 50+."
+  },
+  "8-10": {
+    "level": 4,
+    "category": "Very High",
+    "color": "#E53210",
+    "impact": "Very high risk. Skin and eyes can be damaged quickly.",
+    "advice": "Limit time outside. Use full UV protection."
+  },
+  "11+": {
+    "level": 5,
+    "category": "Extreme",
+    "color": "#B567A4",
+    "impact": "Extreme risk. Unprotected skin can burn in minutes.",
+    "advice": "Avoid the sun. Stay indoors or use complete protection."
+  }
+}

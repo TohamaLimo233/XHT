@@ -1,0 +1,44 @@
+{
+  "0-50": {
+    "level": 1,
+    "category": "Good",
+    "color": "#00E400",
+    "impact": "Air quality is considered satisfactory, and air pollution poses little or no risk.",
+    "advice": "Everyone can continue their outdoor activities normally."
+  },
+  "51-100": {
+    "level": 2,
+    "category": "Moderate",
+    "color": "#FFFF00",
+    "impact": "Air quality is acceptable; however, there may be a risk for some unusually sensitive individuals.",
+    "advice": "Unusually sensitive people should consider reducing prolonged outdoor exertion."
+  },
+  "101-150": {
+    "level": 3,
+    "category": "Unhealthy for Sensitive Groups",
+    "color": "#FF7E00",
+    "impact": "Members of sensitive groups may experience health effects. The general public is not likely to be affected.",
+    "advice": "Children, elderly, and people with heart or lung disease should reduce long or intense outdoor activities."
+  },
+  "151-200": {
+    "level": 4,
+    "category": "Unhealthy",
+    "color": "#FF0000",
+    "impact": "Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.",
+    "advice": "Children, elderly, and those with heart or lung disease should avoid prolonged or heavy outdoor exertion. Others should reduce outdoor activities as needed."
+  },
+  "201-300": {
+    "level": 5,
+    "category": "Very Unhealthy",
+    "color": "#99004C",
+    "impact": "Health alert: The risk of health effects is increased for everyone, especially for people with respiratory or heart conditions.",
+    "advice": "Children, elderly, and sensitive individuals should stay indoors and avoid outdoor activity. Everyone else should also minimize outdoor exposure."
+  },
+  "301-500": {
+    "level": 6,
+    "category": "Hazardous",
+    "color": "#7E0023",
+    "impact": "Health warnings of emergency conditions. The entire population is more likely to be affected.",
+    "advice": "Stay indoors, avoid physical exertion."
+  }
+}

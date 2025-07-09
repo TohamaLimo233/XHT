@@ -8,7 +8,7 @@ import platform
 
 import API
 import LogMaker
-import UI.About as AboutUI
+import UI.about as AboutUI
 
 
 print(" __   ___    _ _______ ")

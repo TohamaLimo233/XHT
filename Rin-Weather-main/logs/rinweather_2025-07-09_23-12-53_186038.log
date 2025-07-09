@@ -1,0 +1,13 @@
+2025-07-09 23:12:54.248 | INFO     | core.backend.weather:fetch_weather:105 - 正在请求天气数据…
+2025-07-09 23:13:07.793 | INFO     | core.backend.weather:parse_weather:134 - 已获取
+2025-07-09 23:13:07.993 | INFO     | core.backend.weather:_onWeatherDataReceived:190 - 天气数据更新于 2025-07-09 23:13:07
+2025-07-09 23:13:20.757 | INFO     | core.backend.cities:search_city:38 - 正在搜索城市：佛山…
+2025-07-09 23:13:28.863 | INFO     | core.backend.cities:search_city:46 - 共搜索到 4 个城市结果
+2025-07-09 23:13:28.888 | INFO     | core.backend.cities:_onSearchFinished:112 - 城市搜索成功，共 4 条
+2025-07-09 23:13:33.992 | WARNING  | core.backend.cities:_onSearchFailed:117 - 城市搜索失败：城市名不能为空
+2025-07-09 23:13:35.040 | INFO     | core.backend.cities:search_city:38 - 正在搜索城市：顺德…
+2025-07-09 23:13:43.510 | INFO     | core.backend.cities:search_city:46 - 共搜索到 1 个城市结果
+2025-07-09 23:13:43.517 | INFO     | core.backend.cities:_onSearchFinished:112 - 城市搜索成功，共 1 条
+2025-07-09 23:13:46.543 | INFO     | core.backend.weather:fetch_weather:105 - 正在请求天气数据…
+2025-07-09 23:13:58.817 | INFO     | core.backend.weather:parse_weather:134 - 已获取
+2025-07-09 23:13:58.947 | INFO     | core.backend.weather:_onWeatherDataReceived:190 - 天气数据更新于 2025-07-09 23:13:58

@@ -1,0 +1,26 @@
+{
+    "weather": {
+        "API_KEY": "",
+        "temp_unit": "celsius",
+        "windspeed_unit": "ms",
+        "precipitation_unit": "mm",
+        "current_city": 1,
+        "cities": [
+            {
+                "name": "顺德",
+                "latitude": 22.80087,
+                "longitude": 113.29208
+            }
+        ]
+    },
+    "network": {
+        "proxy": {
+            "http": null,
+            "https": null
+        },
+        "cache_expiration": 10
+    },
+    "locale": {
+        "language": "zh_CN"
+    }
+}
