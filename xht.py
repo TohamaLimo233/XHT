@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow  # 添加QMainWindow导入
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import psutil
@@ -10,6 +10,7 @@ import platform
 import API
 import LogMaker
 import Config
+import UI.About as AboutUI
 
 
 print(" __   ___    _ _______ ")
@@ -63,9 +64,11 @@ class xht(QWidget):
     def create_tray_menu(self):
         menu = QMenu()
         restore_action = menu.addAction("显示/隐藏")
+        about_action = menu.addAction("关于")  # 添加关于菜单项
         quit_action = menu.addAction("退出")
         
         restore_action.triggered.connect(self.toggle_window)
+        about_action.triggered.connect(self.show_about_window)  # 绑定关于窗口显示方法
         quit_action.triggered.connect(self.quit_app)
         
         self.tray_icon.setContextMenu(menu)
@@ -388,3 +391,10 @@ class xht(QWidget):
             self.sleepying()
         else:
             self.unsleepying()
+
+    def show_about_window(self):
+        """显示关于窗口"""
+        self.about_window = QMainWindow()  # 创建主窗口容器
+        ui = AboutUI.Ui_AboutWindow()  # 初始化UI组件
+        ui.setupUi(self.about_window)  # 应用UI配置
+        self.about_window.show()  # 显示窗口
