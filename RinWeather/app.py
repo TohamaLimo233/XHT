@@ -11,7 +11,7 @@ from core.main import RinWeatherMain
 import sys
 
 
-if __name__ == '__main__':
+def main():
     # 加载配置
     # rw_config = WeatherConfig()
     logger.add(
@@ -23,3 +23,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     main = RinWeatherMain()
     app.exec()
+
+#main()

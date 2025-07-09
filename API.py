@@ -25,7 +25,11 @@ class WeatherAPI():
     def GetCity(self):
         try:
             ctb = requests.get(f"https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1", headers=self.HEADERS, timeout=5).json()
-            return (ctb['data']['cityCN']+"."+ctb['data']["countyCN"].replace("区", "").replace("县", "").replace("市", "").replace("旗", "").replace("特区", "").replace("林区", ""))
+            return {
+                "city":ctb['data']['cityCN'],
+                "county":ctb['data']["countyCN"].replace("区", "").replace("县", "").replace("市", "").replace("旗", "").replace("特区", "").replace("林区", ""),
+                "latitude": ctb['data']['latitude'],
+                "longitude": ctb['data']['longitude']}
         except requests.exceptions.RequestException as e:
             return "获取城市信息失败"
 

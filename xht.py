@@ -1,14 +1,16 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow  # 添加QMainWindow导入
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
+from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property, QEvent
+from multiprocessing import Process
+
 import pygetwindow as gw
 import os, subprocess
 import platform
 
 import API
 import LogMaker
-import UI.about as AboutUI
+import UI.About as AboutUI
 
 
 print(" __   ___    _ _______ ")
@@ -30,26 +32,30 @@ log.info(f"""
 class xht(QWidget):
     def __init__(self):        
         super().__init__()
-        
+        #先决条件
         sys.excepthook = self.handle_exception
-        
         self.weather_api = API.WeatherAPI()
         #self.config = Config.Config().load_config()
+
         self.background_color = QColor(0, 0, 0)
+        #布局
         self.global_layout = None # 全局布局
         self.ui_type  = "original" #预设UI种类
+        #动画
         self.size_animation = QPropertyAnimation(self, b"size")  # 初始化尺寸动画
         self.size_animation.setDuration(180)  # 将 300 替换为期望的毫秒数
         self.show_animation = QPropertyAnimation(self, b"pos")   # 初始化显示动画
         self.hide_animation = QPropertyAnimation(self, b"pos")   # 初始化隐藏动画
+        self.is_hiding = False  # 动画状态
+        #身位相关
         self.edge_height = 4  # 边缘
         self.horizontal_edge_margin = 16  # 水平方向边距（新增）
-        self.is_hiding = False  # 动画状态
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
         self.windowpos = "R"  # 窗口位置
-        self.fullscreen_app = None
+        #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
+        self.citydata = None  # 城市数据，用于Rin Weather
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
@@ -181,15 +187,17 @@ class xht(QWidget):
     def update_weather(self):
         if self.ui_type  == "original":
             city = self.weather_api.GetCity()
-            if not city:
+            print(city)
+            if city == "获取城市信息失败":
                 return
-            city_id = self.weather_api.LookupCity(city)
+            self.citydata = city  # 更新城市数据
+            city_id = self.weather_api.LookupCity(city["city"]+"."+city["county"])
             data = self.weather_api.FetchWeatherData(city_id)
             if isinstance(data, dict):
                 weather_desc = data["weather_desc"]
                 temp = data["temp"] + data["unit"]
                 self.weather_label.setText(f"  {weather_desc} {temp}")
-                log.info(f"{city}的天气数据更新成功")
+                log.info(f"{city["city"]+"."+city["county"]}的天气数据更新成功")
         else:
             return
 
@@ -239,6 +247,7 @@ class xht(QWidget):
         # 创建两个独立的标签
         self.time_label = QLabel(self)
         self.weather_label = QLabel(self)
+        self.weather_label.installEventFilter(self)  # 添加事件过滤器
         
         # 保持原有样式
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -257,6 +266,17 @@ class xht(QWidget):
     def apply_label_style(self, label):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
+    def a(self):
+        print("eventFilter")
+        #Process(target=self.fcd).start()  # 使用多进程调用fcd函数
+
+    def eventFilter(self, obj, event):
+        """重写事件过滤器，处理天气标签点击事件"""
+        if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                self.a()  # 调用a函数
+                return True  # 消耗事件
+        return super().eventFilter(obj, event)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
