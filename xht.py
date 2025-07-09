@@ -43,12 +43,13 @@ class xht(QWidget):
         self.show_animation = QPropertyAnimation(self, b"pos")   # 初始化显示动画
         self.hide_animation = QPropertyAnimation(self, b"pos")   # 初始化隐藏动画
         self.edge_height = 4  # 边缘
+        self.horizontal_edge_margin = 16  # 水平方向边距（新增）
         self.is_hiding = False  # 动画状态
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
-        self.is_sleepy = False #班主任视奸状态
+        self.windowpos = "R"  # 窗口位置
         self.fullscreen_app = None
-        self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
+        self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
@@ -67,9 +68,16 @@ class xht(QWidget):
         
         about_action.triggered.connect(self.show_about_window)  # 绑定关于窗口显示方法
         quit_action.triggered.connect(self.quit_app)
+        restore_action.triggered.connect(self.toggle)
         
         self.tray_icon.setContextMenu(menu)
-
+    def toggle(self):
+        if self.is_hidden:
+            log.info("事件：托盘图标点击，显示窗口")
+            self.show_with_animation()
+        else:
+            log.info("事件：托盘图标点击，隐藏窗口")
+            self.hide_with_animation()
     def handle_tray_activation(self, reason):
         return  
 
@@ -129,15 +137,23 @@ class xht(QWidget):
     def showEvent(self, event):
         super().showEvent(event)
         self.update_position()
-
+        
+        screen = QApplication.primaryScreen().availableGeometry()
+        current_pos = self.pos()
+        
+        # 根据windowpos确定初始位置
+        if self.windowpos == "L":
+            initial_pos = QPoint(-self.width(), current_pos.y())
+        elif self.windowpos == "R":
+            initial_pos = QPoint(screen.width(), current_pos.y())
+        else:  # M
+            initial_pos = QPoint(current_pos.x(), -self.height())
+        
+        # 创建并启动动画
         animation = QPropertyAnimation(self, b"pos", self)
         animation.setDuration(250)
-        screen = QApplication.primaryScreen().availableGeometry()
-        target_x = (screen.width() - self.width()) // 2
-        target_y = 8
-        initial_pos = QPoint(target_x, -self.height())
         animation.setStartValue(initial_pos)
-        animation.setEndValue(QPoint(target_x, target_y))
+        animation.setEndValue(current_pos)
         animation.setEasingCurve(QEasingCurve.OutQuad)
         animation.start()
 
@@ -179,7 +195,12 @@ class xht(QWidget):
 
     def update_position(self):
         screen = QApplication.primaryScreen().availableGeometry()
-        target_x = (screen.width() - self.width()) // 2
+        if self.windowpos == "L":
+            target_x = self.horizontal_edge_margin  # 使用统一的水平边距
+        elif self.windowpos == "R":
+            target_x = (screen.width() - self.width()) - self.horizontal_edge_margin  # 右侧边距
+        else:
+            target_x = (screen.width() - self.width()) // 2
         current_y = self.y()
         self.move(target_x, current_y)
 
@@ -257,25 +278,36 @@ class xht(QWidget):
         log.info("执行动作：显示")
         if self.is_hiding or not self.is_hidden:
             return
-        
+
         self.is_hiding = True
         current_pos = self.pos()
         screen = QApplication.primaryScreen().availableGeometry()
-        target_x = (screen.width() - self.width()) // 2
-        
-        # 添加动画存在性判断
+
+        # 根据windowpos确定初始位置和目标位置
+        if self.windowpos == "L":
+            target_x = self.horizontal_edge_margin  # 使用统一的水平边距
+            initial_pos = QPoint(-self.width(), current_pos.y())
+        elif self.windowpos == "R":
+            target_x = (screen.width() - self.width()) - self.horizontal_edge_margin  # 右侧边距
+            initial_pos = QPoint(screen.width(), current_pos.y())
+        else:  # M
+            target_x = (screen.width() - self.width()) // 2
+            initial_pos = QPoint(target_x, -self.height())
+
+        target_pos = QPoint(target_x, current_pos.y())
+
+        # 重用动画对象
         if not self.show_animation:
             self.show_animation = QPropertyAnimation(self, b"pos", self)
         self.show_animation.setDuration(250)
-        self.show_animation.setStartValue(current_pos)
-        self.show_animation.setEndValue(QPoint(target_x, 8))
+        self.show_animation.setStartValue(initial_pos)
+        self.show_animation.setEndValue(target_pos)
         self.show_animation.setEasingCurve(QEasingCurve.OutQuad)
-        
-        # 添加动画结束事件处理
+
         def on_finished():
             self.is_hiding = False
             self.is_hidden = False
-            
+
         self.show_animation.finished.connect(on_finished)
         self.show_animation.start()
 
@@ -286,28 +318,39 @@ class xht(QWidget):
         
         self.is_hiding = True
         current_pos = self.pos()
-        target_y = current_pos.y() - (self.height() - self.edge_height)
         
-        # 添加动画存在性判断
+        # 根据windowpos确定目标位置
+        if self.windowpos in ["L", "R"]:
+            # 水平方向移动
+            if self.windowpos == "L":
+                target_x = current_pos.x() - (self.width() - self.edge_height)
+            else:  # R
+                target_x = current_pos.x() + (self.width() - self.edge_height)
+            target_pos = QPoint(target_x, current_pos.y())
+        else:
+            # 垂直方向移动保持原逻辑
+            target_y = current_pos.y() - (self.height() - self.edge_height)
+            target_pos = QPoint(current_pos.x(), target_y)
+        
+        # 重用动画对象
         if not self.hide_animation:
             self.hide_animation = QPropertyAnimation(self, b"pos", self)
         self.hide_animation.setDuration(250)
         self.hide_animation.setStartValue(current_pos)
-        self.hide_animation.setEndValue(QPoint(current_pos.x(), target_y))
+        self.hide_animation.setEndValue(target_pos)
         self.hide_animation.setEasingCurve(QEasingCurve.OutQuad)
         
-        # 添加动画结束事件处理
         def on_finished():
             self.is_hiding = False
             self.is_hidden = True
             
         self.hide_animation.finished.connect(on_finished)
         self.hide_animation.start()
+
     def closeEvent(self, event):
         event.ignore()  # 忽略关闭事件，阻止窗口被关闭
 
     def fcd(self):
-        # 替换win32gui实现跨平台窗口检测
         try:
             active_window = gw.getActiveWindow()
             if not active_window:
