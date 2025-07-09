@@ -2,14 +2,12 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow  # 添加QMainWindow导入
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
-import psutil
 import pygetwindow as gw
 import os, subprocess
 import platform
 
 import API
 import LogMaker
-import Config
 import UI.About as AboutUI
 
 
@@ -49,8 +47,8 @@ class xht(QWidget):
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
         self.is_sleepy = False #班主任视奸状态
+        self.fullscreen_app = None
         self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
-        self.sleepy_apps=["AtHomeVideoStreamer"] #视奸应用关键词列表
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
@@ -67,24 +65,16 @@ class xht(QWidget):
         about_action = menu.addAction("关于")  # 添加关于菜单项
         quit_action = menu.addAction("退出")
         
-        restore_action.triggered.connect(self.toggle_window)
         about_action.triggered.connect(self.show_about_window)  # 绑定关于窗口显示方法
         quit_action.triggered.connect(self.quit_app)
         
         self.tray_icon.setContextMenu(menu)
 
     def handle_tray_activation(self, reason):
-        if reason == QSystemTrayIcon.DoubleClick:
-            self.toggle_window()
-
-    def toggle_window(self):
-        if self.is_hidden:
-            self.show_with_animation()
-        else:
-            self.hide_with_animation()
+        return  
 
     def quit_app(self):
-        log.info("程序已退出")
+        log.info("程序退出")
         try:
             subprocess.Popen(["taskkill", "/F", "/PID", str(os.getpid())])
         except:
@@ -135,12 +125,7 @@ class xht(QWidget):
 
         self.fullscreen_check_timer = QTimer(self)
         self.fullscreen_check_timer.timeout.connect(self.fcd)
-        self.fullscreen_check_timer.start(3000) 
-
-        self.sleepy_check_timer = QTimer(self)
-        self.sleepy_check_timer.timeout.connect(self.scd)
-        self.sleepy_check_timer.start(5000)
-
+        self.fullscreen_check_timer.start(2000)
     def showEvent(self, event):
         super().showEvent(event)
         self.update_position()
@@ -254,15 +239,18 @@ class xht(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            log.info("事件：左键点击")
+            log.info("事件：左键点击窗口")
             if self.is_hidden:
                 self.show_with_animation()
             else:
                 self.hide_with_animation()
             return
         if event.button() == Qt.RightButton:
-            log.info("事件：右键点击")
-            self.sleepying()
+            log.info("事件：右键点击窗口")
+            return
+        if event.button() == Qt.MiddleButton:
+            log.info("事件：中键点击窗口")
+            return
         super().mousePressEvent(event)
 
     def show_with_animation(self):
@@ -315,36 +303,6 @@ class xht(QWidget):
             
         self.hide_animation.finished.connect(on_finished)
         self.hide_animation.start()
-
-    def unsleepying(self):
-        if self.is_sleepy:
-            log.info(f"事件：指定的程序触发sleepy蓝点销毁")           
-            self.is_sleepy = False
-            self.sleepy.hide()
-            self.global_layout.removeWidget(self.sleepy)
-            self.sleepy.deleteLater()  # 改用deleteLater
-            self.sleepy = None
-            self.global_layout.update()
-            self.set_size()
-
-    def sleepying(self):
-        if self.is_sleepy:
-            return
-        log.info(f"事件：指定的程序触发sleepy蓝点显示") 
-        self.is_sleepy = True
-        self.sleepy = QLabel(self)
-        self.sleepytext=QLabel(self)
-        self.sleepytext.setText("监控已开启")
-        self.sleepy.setFixedSize(10, 10)
-        self.sleepy.setStyleSheet("background-color: #359aff;border: 1px solid #359aff; border-radius: 5px;")
-        self.sleepytext.setStyleSheet("color: white;")
-        self.global_layout.insertWidget(0, self.sleepy)  # 插入到最左边
-        self.global_layout.insertWidget(1, self.sleepytext)  # 插入在小蓝点之后
-        self.global_layout.update()
-        # 修改为延时2秒后自动删除标签
-        QTimer.singleShot(2000, self.sleepytext.deleteLater)
-        self.set_size()
-
     def closeEvent(self, event):
         event.ignore()  # 忽略关闭事件，阻止窗口被关闭
 
@@ -376,21 +334,6 @@ class xht(QWidget):
                     self.show_with_animation()
         except Exception as e:
             log.warn(f"窗口检测异常: {str(e)}")
-
-    def scd(self):
-        running_processes = []
-        for proc in psutil.process_iter(['name']):
-            try:
-                if proc.status() == 'running':
-                    running_processes.append(proc.name().lower())
-            except psutil.NoSuchProcess:
-                continue
-        # 检查是否有目标进程正在运行
-        if any(any(keyword.lower() in proc_name for keyword in self.sleepy_apps) 
-              for proc_name in running_processes):
-            self.sleepying()
-        else:
-            self.unsleepying()
 
     def show_about_window(self):
         """显示关于窗口"""
