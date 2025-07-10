@@ -268,7 +268,7 @@ class xht(QWidget):
 
     def a(self):
         print("eventFilter")
-        #Process(target=self.fcd).start()  # 使用多进程调用fcd函数
+        Process(target=self.fcd).start()  # 使用多进程调用fcd函数
 
     def eventFilter(self, obj, event):
         """重写事件过滤器，处理天气标签点击事件"""

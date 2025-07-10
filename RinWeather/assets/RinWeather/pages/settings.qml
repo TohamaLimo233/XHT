@@ -15,21 +15,20 @@ FluentPage {
         spacing: 3
         Text {
             typography: Typography.BodyStrong
-            text: qsTr("Network")
+            text: qsTr("网络")
         }
 
         // 网络设置
         SettingExpander {
             id: networkExpander
             width: parent.width
-            title: qsTr("Proxy")
-            description: qsTr("Configure your network proxy settings")
+            title: qsTr("代理")
+            description: qsTr("设置代理")
             icon: "ic_fluent_globe_20_regular"
             property var currentProxies: WeatherConfig.getProxies()
 
             SettingItem {
-                title: qsTr("HTTP Proxy")
-                description: qsTr("Configure your HTTP proxy settings")
+                title: qsTr("HTTP代理")
 
                 TextField {
                     id: httpProxy
@@ -42,8 +41,7 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("HTTPS Proxy")
-                description: qsTr("Configure your HTTPS proxy settings")
+                title: qsTr("HTTPS代理")
 
                 TextField {
                     id: httpsProxy
@@ -56,8 +54,8 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("Cache Expiration")
-                description: qsTr("Configure the cache expiration time (minutes) for Rin Weather")
+                title: qsTr("缓存")
+                description: qsTr("设置缓存有效期（分钟）")
 
                 SpinBox {
                     id: cacheExpiration
@@ -78,22 +76,20 @@ FluentPage {
         spacing: 3
         Text {
             typography: Typography.BodyStrong
-            text: qsTr("Locales")
+            text: qsTr("其他")
         }
 
         SettingExpander {
             width: parent.width
-            title: qsTr("Units")
-            description: qsTr("Configure the units for Rin Weather")
+            title: qsTr("单位")
+            description: qsTr("设置单位")
             icon: "ic_fluent_grid_20_regular"
 
             SettingItem {
-                title: qsTr("Temperature Units")
-                description: qsTr("Configure the temperature units")
-
+                title: qsTr("温度单位")
                 ComboBox {
                     property var data: ["celsius", "fahrenheit"]
-                    model: [qsTr("Celsius"), qsTr("Fahrenheit")]
+                    model: [qsTr("摄氏度"), qsTr("华氏度")]
                     currentIndex: data.indexOf(WeatherConfig.getTempUnit())
                     onCurrentIndexChanged: {
                         WeatherConfig.setTempUnit(data[currentIndex])
@@ -101,16 +97,15 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("Wind Speed Units")
-                description: qsTr("Configure the wind speed units")
+                title: qsTr("风速单位")
 
                 ComboBox {
                     property var data: ["ms", "kmh", "mph", "kn"]
                     model: [
-                        qsTr("Meters per second"),
-                        qsTr("Kilometers per hour"),
-                        qsTr("Miles per hour"),
-                        qsTr("Knots")
+                        qsTr("m/s"),
+                        qsTr("km/h"),
+                        qsTr("英里/小时"),
+                        qsTr("节")
                     ]
                     currentIndex: data.indexOf(WeatherConfig.getWindspeedUnit())
                     onCurrentIndexChanged: {
@@ -119,12 +114,11 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("Precipitation Units")
-                description: qsTr("Configure the precipitation units")
+                title: qsTr("降水单位")
 
                 ComboBox {
                     property var data: ["mm", "inch"]
-                    model: [qsTr("Millimeters"), qsTr("Inches")]
+                    model: [qsTr("毫米"), qsTr("英寸")]
                     currentIndex: data.indexOf(WeatherConfig.getPrecipitationUnit())
                     onCurrentIndexChanged: {
                         WeatherConfig.setPrecipitationUnit(data[currentIndex])
@@ -133,35 +127,6 @@ FluentPage {
             }
         }
 
-        SettingCard {
-            width: parent.width
-            title: qsTr("Display Language")
-            description: qsTr("Set your preferred language for Rin Weather")
-            icon: "ic_fluent_translate_20_regular"
-
-            ComboBox {
-                property var data: [WeatherConfig.getSystemLanguage(), "en_US", "zh_CN"]
-                property bool initialized: false
-                model: ListModel {
-                    ListElement { text: qsTr("Use System Language") }
-                    ListElement { text: "English (US)" }
-                    ListElement { text: "简体中文" }
-                }
-
-                Component.onCompleted: {
-                    currentIndex = data.indexOf(WeatherConfig.getLanguage())
-                    console.log("Language: " + WeatherConfig.getLanguage())
-                    initialized = true
-                }
-
-                onCurrentIndexChanged: {
-                    if (initialized) {
-                        console.log("Language changed to: " + data[currentIndex])
-                        WeatherConfig.setLanguage(data[currentIndex])
-                    }
-                }
-            }
-        }
     }
 
     Column {
@@ -169,7 +134,7 @@ FluentPage {
         spacing: 3
         Text {
             typography: Typography.BodyStrong
-            text: qsTr("About")
+            text: qsTr("关于")
         }
 
         SettingExpander {
@@ -187,12 +152,12 @@ FluentPage {
 
             SettingItem {
                 id: repo
-                title: qsTr("To clone this repository")
+                title: qsTr("Github")
 
                 TextInput {
                     id: repoUrl
                     readOnly: true
-                    text: "git clone https://github.com/RinLit-233-shiroko/Rin-Weather.git"
+                    text: "https://github.com/RinLit-233-shiroko/Rin-Weather"
                     wrapMode: TextInput.Wrap
                 }
                 ToolButton {
@@ -204,18 +169,10 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("File a bug or request new sample")
-
-                Hyperlink {
-                    text: qsTr("Create an issue on GitHub")
-                    openUrl: "https://github.com/RinLit-233-shiroko/Rin-Weather/issues/new/choose"
-                }
-            }
-            SettingItem {
                 Column {
                     Layout.fillWidth: true
                     Text {
-                        text: qsTr("Dependencies & references")
+                        text: qsTr("参考与使用")
                     }
                     Hyperlink {
                         text: qsTr("Rin UI")
@@ -240,12 +197,12 @@ FluentPage {
                 }
             }
             SettingItem {
-                title: qsTr("License")
-                description: qsTr("This project is licensed under the MIT license")
+                title: qsTr("开源协议")
+                description: qsTr("Rin Weather 使用 MIT 协议分发")
 
                 Hyperlink {
                     text: qsTr("MIT License")
-                    openUrl: "https://github.com/RinLit-233-shiroko/Rin-UI/blob/master/LICENSE"
+                    openUrl: "https://github.com/GuzhMtangeroou/XHT/blob/main/LICENSE"
                 }
             }
         }

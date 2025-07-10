@@ -24,4 +24,4 @@ def main():
     main = RinWeatherMain()
     app.exec()
 
-#main()
+main()

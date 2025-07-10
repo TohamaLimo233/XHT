@@ -6,7 +6,7 @@ import RinUI
 
 FluentWindow {
     id: root
-    title: qsTr("Rin Weather")
+    title: qsTr("Rin Weather（嵌入版）")
     width: 900
     height: 600
 
@@ -19,11 +19,6 @@ FluentWindow {
             title: qsTr("Weather"),
             icon: "ic_fluent_weather_rain_showers_day_20_regular",
             page: Qt.resolvedUrl("pages/weather.qml"),
-        },
-        {
-            title: qsTr("Cities"),
-            icon: "ic_fluent_globe_location_20_regular",
-            page: Qt.resolvedUrl("pages/cities.qml"),
         },
         {
             title: qsTr("Settings"),

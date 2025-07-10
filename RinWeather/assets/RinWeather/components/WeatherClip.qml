@@ -6,7 +6,7 @@ import RinUI
 
 Clip {
     id: root
-    radius: Appearance.proxy.buttonRadius
+    radius: 16
 
     default property alias content: contentsArea.data
 

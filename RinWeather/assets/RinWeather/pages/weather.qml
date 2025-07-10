@@ -88,7 +88,7 @@ FluentPage {
             horizontalAlignment: Text.AlignHCenter
             typography: Typography.Subtitle
             color: Colors.dark.textColor
-            text: qsTr("Oops, something went wrong!")
+            text: qsTr("啊呀，骇死我了")
         }
         Text {
             id: failedMessage
@@ -106,7 +106,7 @@ FluentPage {
                 id: retryButton
                 highlighted: true
                 Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Retry")
+                text: qsTr("重试")
                 onClicked: {
                     weatherPage.loading = true
                     weatherPage.failed = false
@@ -114,7 +114,7 @@ FluentPage {
                 }
             }
             Button {
-                text: qsTr("Settings")
+                text: qsTr("转到设置")
                 onClicked: {
                     navigationView.safePush(Qt.resolvedUrl("../pages/settings.qml"))
                 }
@@ -234,7 +234,7 @@ FluentPage {
         WeatherClip {
             Layout.columnSpan: parent.columns
             icon.name: "ic_fluent_clock_20_regular"
-            text: qsTr("HOURLY FORECAST")
+            text: qsTr("小时预报")
             ForecastModel {
                 anchors.fill: parent
                 model: hourlyForecast
@@ -253,7 +253,7 @@ FluentPage {
             Layout.fillHeight: true
             Layout.preferredHeight: 300
             icon.name: "ic_fluent_calendar_20_regular"
-            text: qsTr("7-DAY FORECAST")
+            text: qsTr("7日天气预报")
             ForecastModelExpanded {
                 anchors.fill: parent
                 model: dailyForecast
@@ -267,7 +267,7 @@ FluentPage {
 
         // 空气质量
         WeatherClip {
-            text: qsTr("AIR QUALITY")
+            text: qsTr("空气质量")
             icon.name: "ic_fluent_grid_dots_20_regular"
             AQI_Model {
                 anchors.fill: parent
@@ -287,7 +287,7 @@ FluentPage {
 
         // 紫外线指数
         WeatherClip {
-            text: qsTr("UV INDEX")
+            text: qsTr("紫外线指数")
             icon.name: "ic_fluent_weather_sunny_20_filled"
             UVI_Model {
                 anchors.fill: parent
@@ -307,7 +307,7 @@ FluentPage {
 
         // 降水量
         WeatherClip {
-            text: qsTr("PRECIPITATION")
+            text: qsTr("降水量")
             icon.name: "ic_fluent_drop_20_filled"
             Precipitation_Model {
                 anchors.fill: parent
@@ -329,7 +329,7 @@ FluentPage {
 
         // 风
         WeatherClip {
-            text: qsTr("WIND")
+            text: qsTr("风速与风向")
             icon.name: "ic_fluent_weather_blowing_snow_20_regular"
 
             Wind_Model {
@@ -341,7 +341,7 @@ FluentPage {
         }
 
         WeatherClip {
-            text: qsTr("FEELS LIKE")
+            text: qsTr("体感温度")
             icon.name: "ic_fluent_temperature_20_regular"
             ApparentTemp_Model {
                 anchors.fill: parent
@@ -350,7 +350,7 @@ FluentPage {
         }
 
         WeatherClip {
-            text: qsTr("SUN")
+            text: qsTr("⚡️你若三冬来⚡️")
             icon.name: "ic_fluent_temperature_20_regular"
             Sun_Model {
                 anchors.fill: parent
@@ -367,9 +367,9 @@ FluentPage {
         horizontalAlignment : Text.AlignHCenter
         typography: Typography.Caption
         color: Colors.dark.textSecondaryColor
-        property var lastUpdatedDate: "1970-01-01 00:00:00"
+        property var lastUpdatedDate: "1919-08-10 11:45:14"
 
-        text: qsTr("Last Updated: " + lastUpdatedDate + "<br> Weather data provided by <b>Open Meteo</b>")
+        text: qsTr("最近更新: " + lastUpdatedDate + "<br> 天气数据来源： <b>Open Meteo</b>")
     }
 
     Item {
