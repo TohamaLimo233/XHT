@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject, Slot
-from assets import ASSETS_PATH, RESOURCES_PATH, QML_PATH
+from RinWeather.assets import ASSETS_PATH, RESOURCES_PATH, QML_PATH
 from .backend.resources import WeatherResourceManager
 from .backend.config import WeatherConfig, DEFAULT_CONFIG
 from .backend.weather import WeatherManager

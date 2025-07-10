@@ -5,7 +5,7 @@ from PySide6.QtCore import QObject, Slot, Signal, QLocale, QTranslator
 from PySide6.QtWidgets import QApplication
 from loguru import logger
 
-from assets import ROOT_PATH, ASSETS_PATH
+from RinWeather.assets import ROOT_PATH, ASSETS_PATH
 from RinUI import ConfigManager, RinUITranslator
 
 

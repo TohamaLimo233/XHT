@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from PySide6.QtCore import QObject, Slot, QCoreApplication
 
-from core import ASSETS_PATH
+from RinWeather.core import ASSETS_PATH
 
 
 def qsTr(context: str, text: str) -> str:

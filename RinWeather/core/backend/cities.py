@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 
 from loguru import logger
 
-from core.backend.config import WeatherConfig
+from RinWeather.core.backend.config import WeatherConfig
 
 proxies = {
     "http": None,

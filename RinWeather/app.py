@@ -5,8 +5,8 @@ from PySide6.QtWidgets import QApplication
 from RinUI import RinUITranslator
 from loguru import logger
 
-from assets import ROOT_PATH
-from core.main import RinWeatherMain
+from RinWeather.assets import ROOT_PATH
+from RinWeather.core.main import RinWeatherMain
 
 import sys
 
@@ -24,4 +24,4 @@ def main():
     main = RinWeatherMain()
     app.exec()
 
-main()
+#main()

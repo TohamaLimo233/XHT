@@ -1,13 +1,13 @@
 import requests
 from typing import Optional, Dict, Any
-from core import DEFAULT_CONFIG
-import core.backend.parser as parser
+from RinWeather.core import DEFAULT_CONFIG
+import RinWeather.core.backend.parser as parser
 from loguru import logger
 from datetime import datetime, timedelta
 
 from PySide6.QtCore import QObject, Slot, QDateTime, QTimer, Signal, QThread
 
-from core.backend.config import WeatherConfig
+from RinWeather.core.backend.config import WeatherConfig
 
 default_proxies = {
     "http": None,
@@ -31,9 +31,9 @@ class WeatherRequester:
             if self.config["weather"]["current_city"] > len(self.config["weather"]["cities"]) else 0
 
         self.city_config = {
-            "name": self.config["weather"]["cities"][self.current_city]["name"],
-            "latitude": self.config["weather"]["cities"][self.current_city]["latitude"],
-            "longitude": self.config["weather"]["cities"][self.current_city]["longitude"]
+            "name": self.config["weather"]["cities"]["name"],
+            "latitude": self.config["weather"]["cities"]["latitude"],
+            "longitude": self.config["weather"]["cities"]["longitude"]
         }
 
         # units
@@ -145,7 +145,7 @@ class WeatherManager(QObject):
     weatherUpdatedFailed = Signal(str)
     refreshRequested = Signal()  # 添加一个信号用于跨线程触发
 
-    def __init__(self, config: Optional = None, parent=None):
+    def __init__(self, config: Optional = None, parent=None):  # type: ignore
         super().__init__(parent)
         self.weather_data = None
         self.config = config

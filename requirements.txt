@@ -2,5 +2,4 @@ requests~=2.32.4
 RinUI
 loguru~=0.7.3
 PySide6~=6.9.1
-multiprocessing~=0.70.14
 pygetwindow~=0.0.9

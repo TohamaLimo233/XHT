@@ -7,10 +7,12 @@ from multiprocessing import Process
 import pygetwindow as gw
 import os, subprocess
 import platform
+import json
 
 import API
 import LogMaker
 import UI.About as AboutUI
+import RinWeather.app as RinWeather
 
 
 print(" __   ___    _ _______ ")
@@ -191,13 +193,13 @@ class xht(QWidget):
             if city == "获取城市信息失败":
                 return
             self.citydata = city  # 更新城市数据
-            city_id = self.weather_api.LookupCity(city["city"]+"."+city["county"])
+            city_id = self.weather_api.LookupCity(city["city"]+"."+city["name"])
             data = self.weather_api.FetchWeatherData(city_id)
             if isinstance(data, dict):
                 weather_desc = data["weather_desc"]
                 temp = data["temp"] + data["unit"]
                 self.weather_label.setText(f"  {weather_desc} {temp}")
-                log.info(f"{city["city"]+"."+city["county"]}的天气数据更新成功")
+                log.info(f"{city["city"]+"."+city["name"]}的天气数据更新成功")
         else:
             return
 
@@ -266,15 +268,37 @@ class xht(QWidget):
     def apply_label_style(self, label):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
-    def a(self):
+    def RinWeather(self):
         print("eventFilter")
-        Process(target=self.fcd).start()  # 使用多进程调用fcd函数
+        config_path = os.path.join(os.path.dirname(__file__), "RinWeather", "config.json")
+        
+        try:
+            # 读取原始配置
+            with open(config_path, "r", encoding="utf-8") as f:
+                config_data = json.load(f)
+            
+            # 更新城市数据
+            config_data["weather"]["cities"] = self.citydata
+            
+            # 写入更新后的配置
+            with open(config_path, "w", encoding="utf-8") as f:
+                json.dump(config_data, f, indent=4)
+            
+            # 启动子进程（设置守护模式避免僵尸进程）
+            process = Process(target=RinWeather.main, daemon=True)
+            process.start()
+            
+        except (IOError, json.JSONDecodeError) as e:
+            # 根据实际需求记录日志或提示错误
+            print(f"文件操作失败: {e}")
+        except Exception as e:
+            print(f"未知错误: {e}")
 
     def eventFilter(self, obj, event):
         """重写事件过滤器，处理天气标签点击事件"""
         if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                self.a()  # 调用a函数
+                self.RinWeather()  # 调用a函数
                 return True  # 消耗事件
         return super().eventFilter(obj, event)
 

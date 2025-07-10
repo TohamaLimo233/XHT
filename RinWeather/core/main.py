@@ -4,18 +4,23 @@ from pathlib import Path
 from PySide6.QtCore import QCoreApplication, QObject, Slot, QLocale, QTranslator
 from RinUI import RinUIWindow, RinUITranslator
 
-from assets import ASSETS_PATH, QML_PATH, RESOURCES_PATH
-from core import PathManager, WeatherResourceManager, WeatherManager, WeatherConfig, CityManager
+from RinWeather.assets import ASSETS_PATH, QML_PATH, RESOURCES_PATH
+from RinWeather.core import PathManager, WeatherResourceManager, WeatherManager, WeatherConfig, CityManager
 
 
 class RinWeatherMain(RinUIWindow):
     def __init__(self):
         super().__init__()
+        # 确保配置初始化顺序合理
         self.pathManager = PathManager()
         self.weatherResourceManager = WeatherResourceManager()
         self.weatherConfig = WeatherConfig(self)
-        self.weatherManager = WeatherManager(self.weatherConfig)
+        
+        # 城市管理器依赖配置
         self.cityManager = CityManager(self.weatherConfig)
+        
+        # 天气管理器依赖配置和城市管理器
+        self.weatherManager = WeatherManager(self.weatherConfig)
 
         self.engine.addImportPath(Path(ASSETS_PATH))
         self.engine.rootContext().setContextProperty("RinPath", self.pathManager)
@@ -28,7 +33,7 @@ class RinWeatherMain(RinUIWindow):
 
         # i18n
         app_instance = QCoreApplication.instance()
-        self.weatherConfig.setLanguage(self.weatherConfig.getLanguage())
+        #self.weatherConfig.setLanguage(self.weatherConfig.getLanguage())
         app_instance.aboutToQuit.connect(self.cleanup)
 
         self.load(Path(QML_PATH, "app.qml"))
