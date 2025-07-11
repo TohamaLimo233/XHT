@@ -2,12 +2,10 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property, QEvent
-from multiprocessing import Process
 
 import pygetwindow as gw
 import os, subprocess
 import platform
-import json
 import API
 # import LogMaker
 from loguru import logger as log
