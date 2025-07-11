@@ -7,7 +7,7 @@ import RinUI
 FluentWindow {
     id: window
     visible: true
-    title: qsTr("小黑条 - 设置")
+    title: qsTr("设置")
     icon: Qt.resolvedUrl("../res/xhtlogo.ico")
     width: 900
     height: 700
