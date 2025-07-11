@@ -2,8 +2,8 @@ import xht
 import sys
 from PySide6.QtWidgets import QApplication
 
-# 设置不生成 .pyc 文件
-sys.dont_write_bytecode = True
+
+
 
 
 if __name__ == '__main__':

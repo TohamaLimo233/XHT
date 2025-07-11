@@ -1,7 +1,7 @@
 import logging
 import coloredlogs
 import sys
-sys.dont_write_bytecode = True
+
 
 
 class logger:
