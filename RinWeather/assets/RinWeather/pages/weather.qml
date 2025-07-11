@@ -234,7 +234,7 @@ FluentPage {
         WeatherClip {
             Layout.columnSpan: parent.columns
             icon.name: "ic_fluent_clock_20_regular"
-            text: qsTr("小时预报")
+            text: qsTr("每小时预报")
             ForecastModel {
                 anchors.fill: parent
                 model: hourlyForecast
@@ -253,7 +253,7 @@ FluentPage {
             Layout.fillHeight: true
             Layout.preferredHeight: 300
             icon.name: "ic_fluent_calendar_20_regular"
-            text: qsTr("7日天气预报")
+            text: qsTr("7日天气")
             ForecastModelExpanded {
                 anchors.fill: parent
                 model: dailyForecast

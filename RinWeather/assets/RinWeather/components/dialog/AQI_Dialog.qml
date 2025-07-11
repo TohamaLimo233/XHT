@@ -7,7 +7,7 @@ import RinWeather
 
 Dialog {
     id: aqiDialog
-    title: qsTr("Air Quality")
+    title: qsTr("空气质量")
     modal: true
 
     property var aqi: 0
@@ -38,7 +38,7 @@ Dialog {
                     anchors.fill: parent
                     spacing: 12
                     Text {
-                        text: qsTr("Current AQI is " + aqi + ".")
+                        text: qsTr("当前AQI：" + aqi)
                     }
                     AQI_ProgressBar {
                         Layout.fillWidth: true
@@ -50,7 +50,7 @@ Dialog {
             Text {
                 Layout.alignment: Qt.AlignTop
                 typography: Typography.BodyStrong
-                text: qsTr("Health Information")
+                text: qsTr("建议")
             }
             Frame {
                 Layout.fillWidth: true

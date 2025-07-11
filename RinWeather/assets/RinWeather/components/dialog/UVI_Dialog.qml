@@ -7,7 +7,7 @@ import RinWeather
 
 Dialog {
     id: uviDialog
-    title: qsTr("UV Index")
+    title: qsTr("紫外线指数")
     modal: true
 
     property var uvi: 0
@@ -38,7 +38,7 @@ Dialog {
                     anchors.fill: parent
                     spacing: 12
                     Text {
-                        text: qsTr("Current UVI is " + uvi + ".")
+                        text: qsTr("当前紫外线指数：" + uvi)
                     }
                     UVI_ProgressBar {
                         Layout.fillWidth: true
@@ -50,7 +50,7 @@ Dialog {
             Text {
                 Layout.alignment: Qt.AlignTop
                 typography: Typography.BodyStrong
-                text: qsTr("Health Information")
+                text: qsTr("建议")
             }
             Frame {
                 Layout.fillWidth: true

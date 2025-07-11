@@ -8,7 +8,7 @@ import QtCharts 2.15
 
 Dialog {
     id: weatherDialog
-    title: qsTr("Weather Condition")
+    title: qsTr("7日天气预报")
     modal: true
 
     property var currentWeather: {}
@@ -52,7 +52,7 @@ Dialog {
                         Layout.alignment: Qt.AlignTop
                         typography: Typography.Body
                         color: Colors.proxy.textSecondaryColor
-                        text: qsTr("H:" + currentTemperatures[0] + "° L:" + currentTemperatures[1] + "°")
+                        text: qsTr("最高" + currentTemperatures[0] + "°，最低" + currentTemperatures[1] + "°")
                     }
                 }
 

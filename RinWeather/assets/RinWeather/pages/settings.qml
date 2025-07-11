@@ -140,15 +140,10 @@ FluentPage {
         SettingExpander {
             width: parent.width
             title: qsTr("Rin Weather")
-            description: qsTr("© 2025 RinLit. All rights reserved.")
+            description: qsTr("")
             source: RinPath.resources("images/logo.png")
             // iconSize: 28
 
-            // 版本号
-            content: Text {
-                color: Theme.currentTheme.colors.textSecondaryColor
-                text: "1.0.0"
-            }
 
             SettingItem {
                 id: repo
@@ -172,7 +167,7 @@ FluentPage {
                 Column {
                     Layout.fillWidth: true
                     Text {
-                        text: qsTr("参考与使用")
+                        text: qsTr("使用库")
                     }
                     Hyperlink {
                         text: qsTr("Rin UI")
@@ -198,11 +193,15 @@ FluentPage {
             }
             SettingItem {
                 title: qsTr("开源协议")
-                description: qsTr("Rin Weather 使用 MIT 协议分发")
+                description: qsTr("Rin Weather与小黑条均使用 MIT 协议分发")
 
                 Hyperlink {
-                    text: qsTr("MIT License")
+                    text: qsTr("License")
                     openUrl: "https://github.com/GuzhMtangeroou/XHT/blob/main/LICENSE"
+                }
+                Hyperlink{
+                    text: qsTr("License（Rin Weather）")
+                    openUrl: "https://github.com/RinLit-233-shiroko/Rin-Weather/blob/main/LICENSE"
                 }
             }
         }

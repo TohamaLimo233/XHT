@@ -6,7 +6,7 @@ import RinUI
 
 FluentWindow {
     id: root
-    title: qsTr("Rin Weather（嵌入版）")
+    title: qsTr("天气")
     width: 900
     height: 600
 

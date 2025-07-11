@@ -3,7 +3,6 @@ from RinWeather.assets import ASSETS_PATH, RESOURCES_PATH, QML_PATH
 from .backend.resources import WeatherResourceManager
 from .backend.config import WeatherConfig, DEFAULT_CONFIG
 from .backend.weather import WeatherManager
-from .backend.cities import CityManager
 
 
 class PathManager(QObject):

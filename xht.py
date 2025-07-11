@@ -177,7 +177,7 @@ class xht(QWidget):
 
     def update_time(self):
         if self.ui_type  == "original":
-            self.current_time = QTime.currentTime().toString("hh:mm")
+            self.current_time = QTime.currentTime().toString("hh:mm") + " "
             if  self.ui_type == "original":
                 self.time_label.setText(self.current_time)
                 #self.a=self.a+510
@@ -189,7 +189,6 @@ class xht(QWidget):
     def update_weather(self):
         if self.ui_type  == "original":
             city = self.weather_api.GetCity()
-            print(city)
             if city == "获取城市信息失败":
                 return
             self.citydata = city  # 更新城市数据
@@ -198,7 +197,7 @@ class xht(QWidget):
             if isinstance(data, dict):
                 weather_desc = data["weather_desc"]
                 temp = data["temp"] + data["unit"]
-                self.weather_label.setText(f"  {weather_desc} {temp}")
+                self.weather_label.setText(f"{weather_desc} {temp}")
                 log.info(f"{city["city"]+"."+city["name"]}的天气数据更新成功")
         else:
             return
@@ -269,7 +268,6 @@ class xht(QWidget):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
     def RinWeather(self):
-        print("eventFilter")
         config_path = os.path.join(os.path.dirname(__file__), "RinWeather", "config.json")
         
         try:

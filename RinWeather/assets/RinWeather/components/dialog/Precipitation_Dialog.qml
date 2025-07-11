@@ -8,7 +8,7 @@ import QtCharts 2.15
 
 Dialog {
     id: precipitationDialog
-    title: qsTr("Precipitation")
+    title: qsTr("降水量")
     modal: true
 
     property var precipitation: 0
@@ -40,7 +40,7 @@ Dialog {
                     anchors.fill: parent
                     spacing: 12
                     Text {
-                        text: qsTr("Total for the day")
+                        text: qsTr("降水量条形图")
                     }
 
                     Flickable {
