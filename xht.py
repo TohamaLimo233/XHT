@@ -8,10 +8,10 @@ import pygetwindow as gw
 import os, subprocess
 import platform
 import json
-
+import UI.about
 import API
-import LogMaker
-import UI.About as AboutUI
+# import LogMaker
+from loguru import logger as log
 import RinWeather.app as RinWeather
 
 
@@ -22,7 +22,8 @@ print("   > < |  __  |  | |   ")
 print("  / . \\| |  | |  | |   ")
 print(" /_/ \\_\\_|  |_|  |_|   ")
 
-log=LogMaker.logger()
+log.add("out.log")
+log.add(sys.stderr, level="DEBUG")
 
 log.info(f"""
          运行平台：{platform.system()}
@@ -423,6 +424,6 @@ class xht(QWidget):
     def show_about_window(self):
         """显示关于窗口"""
         self.about_window = QMainWindow()  # 创建主窗口容器
-        ui = AboutUI.Ui_AboutWindow()  # 初始化UI组件
+        ui = UI.about.Ui_AboutWindow()  # 初始化UI组件
         ui.setupUi(self.about_window)  # 应用UI配置
         self.about_window.show()  # 显示窗口
