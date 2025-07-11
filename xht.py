@@ -8,12 +8,10 @@ import pygetwindow as gw
 import os, subprocess
 import platform
 import json
-import UI.about
 import API
 # import LogMaker
 from loguru import logger as log
-import RinWeather.app as RinWeather
-
+import UI.About as AboutUI
 
 print(" __   ___    _ _______ ")
 print(" \\ \\ / / |  | |__   __|")
@@ -264,34 +262,9 @@ class xht(QWidget):
     def apply_label_style(self, label):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
-    def RinWeather(self):
-        if self.is_hidden and self.windowpos == "L":
-            self.show_with_animation()
-            return
-        
-        config_path = "RinWeather/config.json"
-        
-        try:
-            with open(config_path, "r", encoding="utf-8") as f:
-                config_data = json.load(f)
-            
-            config_data["weather"]["cities"] = self.citydata
-            with open(config_path, "w", encoding="utf-8") as f:
-                json.dump(config_data, f, indent=4)
-            
-            process = Process(target=RinWeather.main, daemon=True)
-            process.start()
-            
-        except (IOError, json.JSONDecodeError) as e:
-            print(f"文件操作失败: {e}")
-        except Exception as e:
-            print(f"未知错误: {e}")
-
     def eventFilter(self, obj, event):
         """重写事件过滤器，处理天气标签点击事件"""
         if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
-            if event.button() == Qt.LeftButton:
-                self.RinWeather()
                 return True
         return super().eventFilter(obj, event)
 
