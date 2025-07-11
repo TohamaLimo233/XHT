@@ -57,11 +57,11 @@ class xht(QWidget):
         self.windowpos = "R"  # 窗口位置
         #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
-        self.citydata = None  # 城市数据，用于Rin Weather
+        self.citydata = None
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("res\\icon\\tray_de.ico"))  # 需要准备图标文件
+        self.tray_icon.setIcon(QIcon("res/icon/tray_de.ico"))
         self.tray_icon.setToolTip("小黑条-正常运行中")
         self.tray_icon.activated.connect(self.handle_tray_activation)
           
@@ -71,10 +71,10 @@ class xht(QWidget):
     def create_tray_menu(self):
         menu = QMenu()
         restore_action = menu.addAction("显示/隐藏")
-        about_action = menu.addAction("关于")  # 添加关于菜单项
+        about_action = menu.addAction("关于")
         quit_action = menu.addAction("退出")
         
-        about_action.triggered.connect(self.show_about_window)  # 绑定关于窗口显示方法
+        about_action.triggered.connect(self.show_about_window)
         quit_action.triggered.connect(self.quit_app)
         restore_action.triggered.connect(self.toggle)
         
@@ -168,7 +168,7 @@ class xht(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.setBrush(QBrush(self.background_color))  # 使用可配置颜色
+        painter.setBrush(QBrush(self.background_color))
         painter.setPen(Qt.PenStyle.NoPen)
         if platform.system() == "Windows":
             painter.drawRoundedRect(self.rect(), 24, 24)
@@ -214,8 +214,8 @@ class xht(QWidget):
         self.move(target_x, current_y)
 
     def set_size(self):
-        self.layout().activate()  # 确保布局更新
-        self.updateGeometry()     # 更新几何信息
+        self.layout().activate()
+        self.updateGeometry()
         
         # 获取建议尺寸时考虑布局边距
         content_size = self.layout().sizeHint().expandedTo(self.minimumSize())
@@ -296,8 +296,8 @@ class xht(QWidget):
         """重写事件过滤器，处理天气标签点击事件"""
         if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                self.RinWeather()  # 调用a函数
-                return True  # 消耗事件
+                self.RinWeather()
+                return True
         return super().eventFilter(obj, event)
 
     def mousePressEvent(self, event):
@@ -390,7 +390,7 @@ class xht(QWidget):
         self.hide_animation.start()
 
     def closeEvent(self, event):
-        event.ignore()  # 忽略关闭事件，阻止窗口被关闭
+        event.ignore()  # 忽略关闭事件
 
     def fcd(self):
         try:
@@ -422,7 +422,7 @@ class xht(QWidget):
 
     def show_about_window(self):
         """显示关于窗口"""
-        self.about_window = QMainWindow()  # 创建主窗口容器
-        ui = AboutUI.Ui_AboutWindow()  # 初始化UI组件
-        ui.setupUi(self.about_window)  # 应用UI配置
-        self.about_window.show()  # 显示窗口
+        self.about_window = QMainWindow()
+        ui = AboutUI.Ui_AboutWindow()
+        ui.setupUi(self.about_window)
+        self.about_window.show()

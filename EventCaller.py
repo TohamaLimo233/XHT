@@ -1,6 +1,5 @@
 import http.server
 import random
-import sys
 
 
 class EventCaller(http.server.BaseHTTPRequestHandler):
