@@ -8,11 +8,16 @@ FluentPage {
     wrapperWidth: width - 42*2
     Column {
         Layout.fillWidth: true
-        spacing: 3   
+        spacing: 3 
+
         Text{
             typography: Typography.Title
-            text: "关于NamePicker"
+            text: "关于"
         }
+
+        Text{
+            typography: Typography.Body
+            }
 
         SettingCard {
             width: parent.width
