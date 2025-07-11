@@ -1,5 +1,7 @@
 *.log
 .DS_Store
 __pycache__/
-.venv/
 config.json
+build/
+dist/
+*.spec
