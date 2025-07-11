@@ -268,7 +268,7 @@ class xht(QWidget):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
     def RinWeather(self):
-        config_path = "res/config.json"
+        config_path = "RinWeather/config.json"
         
         try:
             # 读取原始配置
