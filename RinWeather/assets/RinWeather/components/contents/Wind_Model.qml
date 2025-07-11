@@ -44,7 +44,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 color: Colors.dark.textColor
-                text: qsTr("Speed")
+                text: qsTr("风速")
             }
             Text {
                 typography: Typography.BodyStrong
@@ -60,7 +60,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 color: Colors.dark.textColor
-                text: qsTr("Direction")
+                text: qsTr("风向")
             }
             Text {
                 typography: Typography.BodyStrong

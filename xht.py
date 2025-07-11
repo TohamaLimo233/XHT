@@ -41,28 +41,32 @@ class xht(QWidget):
         #self.config = Config.Config().load_config()
 
         self.background_color = QColor(0, 0, 0)
+
         #布局
         self.global_layout = None # 全局布局
         self.ui_type  = "original" #预设UI种类
+
         #动画
         self.size_animation = QPropertyAnimation(self, b"size")  # 初始化尺寸动画
         self.size_animation.setDuration(180)  # 将 300 替换为期望的毫秒数
         self.show_animation = QPropertyAnimation(self, b"pos")   # 初始化显示动画
         self.hide_animation = QPropertyAnimation(self, b"pos")   # 初始化隐藏动画
         self.is_hiding = False  # 动画状态
+
         #身位相关
         self.edge_height = 4  # 边缘
         self.horizontal_edge_margin = 16  # 水平方向边距（新增）
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
-        self.windowpos = "R"  # 窗口位置
+        self.windowpos = "L"  # 窗口位置
+        
         #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
-        self.citydata = None  # 城市数据，用于Rin Weather
+        self.citydata = None
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("res\\icon\\tray_de.ico"))  # 需要准备图标文件
+        self.tray_icon.setIcon(QIcon("res/icon/tray_de.ico"))
         self.tray_icon.setToolTip("小黑条-正常运行中")
         self.tray_icon.activated.connect(self.handle_tray_activation)
           
@@ -72,10 +76,10 @@ class xht(QWidget):
     def create_tray_menu(self):
         menu = QMenu()
         restore_action = menu.addAction("显示/隐藏")
-        about_action = menu.addAction("关于")  # 添加关于菜单项
+        about_action = menu.addAction("关于")
         quit_action = menu.addAction("退出")
         
-        about_action.triggered.connect(self.show_about_window)  # 绑定关于窗口显示方法
+        about_action.triggered.connect(self.show_about_window)
         quit_action.triggered.connect(self.quit_app)
         restore_action.triggered.connect(self.toggle)
         
@@ -125,7 +129,6 @@ class xht(QWidget):
         error_msg = f"{exc_type.__name__}: {exc_value}"
         log.cirical(f"严重错误: {error_msg}", exc_info=True)
         
-        # 在主线程显示错误窗口
         QTimer.singleShot(0, lambda: self.show_error_window(error_msg))
         
     def show_error_window(self, msg):
@@ -169,7 +172,7 @@ class xht(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.setBrush(QBrush(self.background_color))  # 使用可配置颜色
+        painter.setBrush(QBrush(self.background_color))
         painter.setPen(Qt.PenStyle.NoPen)
         if platform.system() == "Windows":
             painter.drawRoundedRect(self.rect(), 24, 24)
@@ -215,8 +218,8 @@ class xht(QWidget):
         self.move(target_x, current_y)
 
     def set_size(self):
-        self.layout().activate()  # 确保布局更新
-        self.updateGeometry()     # 更新几何信息
+        self.layout().activate()
+        self.updateGeometry()
         
         # 获取建议尺寸时考虑布局边距
         content_size = self.layout().sizeHint().expandedTo(self.minimumSize())
@@ -226,39 +229,32 @@ class xht(QWidget):
         if self.size() == content_size:
             return
         
-        # 终止正在进行的动画
         if self.size_animation.state() == QPropertyAnimation.Running:
             self.size_animation.stop()
         
-        # 配置复用动画参数
         self.size_animation.setStartValue(self.size())
         self.size_animation.setEndValue(content_size)
         
-        # 动画结束处理
         def on_finish():
             self.resize(content_size)
             self.update_position()
         
-        # 优化信号连接逻辑 - 避免重复断开连接
         self.size_animation.finished.connect(on_finish)
         self.size_animation.start()
 
     def original_ui(self):
         log.info("UI模式切换：original")
         self.ui_type = "original"
-        # 创建两个独立的标签
         self.time_label = QLabel(self)
         self.weather_label = QLabel(self)
-        self.weather_label.installEventFilter(self)  # 添加事件过滤器
+        self.weather_label.installEventFilter(self)
         
-        # 保持原有样式
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.weather_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         self.apply_label_style(self.time_label)
         self.apply_label_style(self.weather_label)
         
-        # 使用水平布局排列两个标签
         self.global_layout = QHBoxLayout()
         self.global_layout.addWidget(self.time_label)
         self.global_layout.addWidget(self.weather_label)
@@ -269,26 +265,24 @@ class xht(QWidget):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
 
     def RinWeather(self):
+        if self.is_hidden and self.windowpos == "L":
+            self.show_with_animation()
+            return
+        
         config_path = "RinWeather/config.json"
         
         try:
-            # 读取原始配置
             with open(config_path, "r", encoding="utf-8") as f:
                 config_data = json.load(f)
             
-            # 更新城市数据
             config_data["weather"]["cities"] = self.citydata
-            
-            # 写入更新后的配置
             with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(config_data, f, indent=4)
             
-            # 启动子进程（设置守护模式避免僵尸进程）
             process = Process(target=RinWeather.main, daemon=True)
             process.start()
             
         except (IOError, json.JSONDecodeError) as e:
-            # 根据实际需求记录日志或提示错误
             print(f"文件操作失败: {e}")
         except Exception as e:
             print(f"未知错误: {e}")
@@ -297,8 +291,8 @@ class xht(QWidget):
         """重写事件过滤器，处理天气标签点击事件"""
         if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                self.RinWeather()  # 调用a函数
-                return True  # 消耗事件
+                self.RinWeather()
+                return True
         return super().eventFilter(obj, event)
 
     def mousePressEvent(self, event):
@@ -326,20 +320,18 @@ class xht(QWidget):
         current_pos = self.pos()
         screen = QApplication.primaryScreen().availableGeometry()
 
-        # 根据windowpos确定初始位置和目标位置
         if self.windowpos == "L":
             target_x = self.horizontal_edge_margin  # 使用统一的水平边距
             initial_pos = QPoint(-self.width(), current_pos.y())
         elif self.windowpos == "R":
             target_x = (screen.width() - self.width()) - self.horizontal_edge_margin  # 右侧边距
             initial_pos = QPoint(screen.width(), current_pos.y())
-        else:  # M
+        else:
             target_x = (screen.width() - self.width()) // 2
             initial_pos = QPoint(target_x, -self.height())
 
         target_pos = QPoint(target_x, current_pos.y())
 
-        # 重用动画对象
         if not self.show_animation:
             self.show_animation = QPropertyAnimation(self, b"pos", self)
         self.show_animation.setDuration(250)
@@ -362,20 +354,16 @@ class xht(QWidget):
         self.is_hiding = True
         current_pos = self.pos()
         
-        # 根据windowpos确定目标位置
         if self.windowpos in ["L", "R"]:
-            # 水平方向移动
             if self.windowpos == "L":
                 target_x = current_pos.x() - (self.width() - self.edge_height)
-            else:  # R
+            else:
                 target_x = current_pos.x() + (self.width() - self.edge_height)
             target_pos = QPoint(target_x, current_pos.y())
         else:
-            # 垂直方向移动保持原逻辑
             target_y = current_pos.y() - (self.height() - self.edge_height)
             target_pos = QPoint(current_pos.x(), target_y)
         
-        # 重用动画对象
         if not self.hide_animation:
             self.hide_animation = QPropertyAnimation(self, b"pos", self)
         self.hide_animation.setDuration(250)
@@ -391,15 +379,13 @@ class xht(QWidget):
         self.hide_animation.start()
 
     def closeEvent(self, event):
-        event.ignore()  # 忽略关闭事件，阻止窗口被关闭
+        event.ignore()  # 忽略关闭事件
 
     def fcd(self):
         try:
             active_window = gw.getActiveWindow()
             if not active_window:
                 return
-            
-            # 增加属性访问异常处理和类型校验
             try:
                 self.title = active_window.title
             except AttributeError:
@@ -423,7 +409,8 @@ class xht(QWidget):
 
     def show_about_window(self):
         """显示关于窗口"""
-        self.about_window = QMainWindow()  # 创建主窗口容器
-        ui = UI.about.Ui_AboutWindow()  # 初始化UI组件
-        ui.setupUi(self.about_window)  # 应用UI配置
-        self.about_window.show()  # 显示窗口
+        
+        self.about_window = QMainWindow()
+        ui = AboutUI.Ui_AboutWindow()
+        ui.setupUi(self.about_window)
+        self.about_window.show()

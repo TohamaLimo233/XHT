@@ -1,7 +1,6 @@
 import http.server
 import random
-import sys
-sys.dont_write_bytecode = True
+
 
 class EventCaller(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
