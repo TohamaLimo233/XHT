@@ -25,7 +25,7 @@ ColumnLayout {
     }
     Text {
         color: Colors.dark.textColor
-        text: qsTr("Current AQI is " + aqi + ".")
+        text: qsTr("当前AQI：" + aqi)
     }
 
     AQI_ProgressBar {

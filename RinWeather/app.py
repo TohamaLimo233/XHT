@@ -1,8 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QLocale, QTranslator
 from PySide6.QtWidgets import QApplication
-from RinUI import RinUITranslator
 from loguru import logger
 
 from RinWeather.assets import ROOT_PATH

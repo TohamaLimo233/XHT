@@ -4,7 +4,13 @@
         "temp_unit": "celsius",
         "windspeed_unit": "ms",
         "precipitation_unit": "mm",
-        "current_city": 0
+        "current_city": 0,
+        "cities": {
+            "city": "\u4f5b\u5c71",
+            "name": "\u987a\u5fb7",
+            "latitude": "22.845057",
+            "longitude": "113.175158"
+        }
     },
     "network": {
         "proxy": {

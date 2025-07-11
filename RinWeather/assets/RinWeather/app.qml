@@ -16,12 +16,12 @@ FluentWindow {
 
     navigationItems: [
         {
-            title: qsTr("Weather"),
+            title: qsTr("天气"),
             icon: "ic_fluent_weather_rain_showers_day_20_regular",
             page: Qt.resolvedUrl("pages/weather.qml"),
         },
         {
-            title: qsTr("Settings"),
+            title: qsTr("设置"),
             icon: "ic_fluent_settings_20_regular",
             page: Qt.resolvedUrl("pages/settings.qml"),
         },
