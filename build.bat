@@ -1,1 +1,0 @@
-pyinstaller -w --onefile --icon=xhtlogo.ico --upx-dir=E:\upx\upx-5.0.1-win64 app.py
