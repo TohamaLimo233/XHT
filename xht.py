@@ -259,13 +259,6 @@ class xht(QWidget):
 
     def apply_label_style(self, label):
         label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
-
-    def eventFilter(self, obj, event):
-        """重写事件过滤器，处理天气标签点击事件"""
-        if obj == self.weather_label and event.type() == QEvent.Type.MouseButtonPress:
-                return True
-        return super().eventFilter(obj, event)
-
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             log.info("事件：左键点击窗口")
