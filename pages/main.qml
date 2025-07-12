@@ -24,11 +24,11 @@ FluentWindow {
         //     page: Qt.resolvedUrl("Settings.qml"),
         //     icon: "ic_fluent_settings_20_regular",
         // },
-        // {
-        //     title: "更新",
-        //     page: Qt.resolvedUrl("Update.qml"),
-        //     icon: "ic_fluent_arrow_sync_20_regular",
-        // },
+        {
+            title: "更新",
+            page: Qt.resolvedUrl("Update.qml"),
+            icon: "ic_fluent_arrow_sync_20_regular",
+        },
         {
             title: "关于",
             page: Qt.resolvedUrl("About.qml"),
