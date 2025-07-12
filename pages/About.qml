@@ -15,10 +15,6 @@ FluentPage {
             text: "关于"
         }
 
-        Text{
-            typography: Typography.Body
-            }
-
         SettingCard {
             width: parent.width
             title: qsTr("XHT v0.0.1")
