@@ -14,16 +14,11 @@ FluentWindow {
     minimumWidth: 550
     minimumHeight: 400
     navigationItems: [
-        // {
-        //     title: "随机抽选",
-        //     page: Qt.resolvedUrl("Choose.qml"),
-        //     icon: "ic_fluent_home_20_regular",
-        // },
-        // {
-        //     title: "设置",
-        //     page: Qt.resolvedUrl("Settings.qml"),
-        //     icon: "ic_fluent_settings_20_regular",
-        // },
+         {
+             title: "设置",
+             page: Qt.resolvedUrl("Settings.qml"),
+             icon: "ic_fluent_settings_20_regular",
+         },
         {
             title: "更新",
             page: Qt.resolvedUrl("Update.qml"),
@@ -35,10 +30,4 @@ FluentWindow {
             icon: "ic_fluent_info_20_regular",
         }
     ]
-    // onClosing: {
-    //     if (Qt.platform.os === "windows" || Qt.platform.os === "linux") {
-    //         close.accepted = false
-    //         window.hide()
-    //     }
-    // }
 }

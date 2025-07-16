@@ -10,6 +10,7 @@ import API
 # import LogMaker
 from loguru import logger as log
 import UI.About as AboutUI
+import pages.main
 
 print(" __   ___    _ _______ ")
 print(" \\ \\ / / |  | |__   __|")
@@ -54,7 +55,7 @@ class xht(QWidget):
         self.horizontal_edge_margin = 16  # 水平方向边距（新增）
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
-        self.windowpos = "L"  # 窗口位置
+        self.windowpos = "M"  # 窗口位置
         
         #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
@@ -80,6 +81,7 @@ class xht(QWidget):
         restore_action.triggered.connect(self.toggle)
         
         self.tray_icon.setContextMenu(menu)
+
     def toggle(self):
         if self.is_hidden:
             log.info("事件：托盘图标点击，显示窗口")
