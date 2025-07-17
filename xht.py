@@ -54,7 +54,7 @@ class xht(QWidget):
         self.horizontal_edge_margin = 16  # 水平方向边距（新增）
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
-        self.windowpos = "M"  # 窗口位置
+        self.windowpos = "R"  # 窗口位置
         
         #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
@@ -107,7 +107,8 @@ class xht(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
 
-        self.original_ui()
+        #self.original_ui()
+        self.html_ui()
         self.reg_timers()
         self.update_weather()
         
@@ -248,18 +249,22 @@ class xht(QWidget):
         
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.weather_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        self.apply_label_style(self.time_label)
-        self.apply_label_style(self.weather_label)
-        
+
         self.global_layout = QHBoxLayout()
         self.global_layout.addWidget(self.time_label)
         self.global_layout.addWidget(self.weather_label)
         self.setLayout(self.global_layout)
         self.set_size()
+    def html_ui(self):
+        log.info("UI模式切换：html")
+        self.ui_type = "html"
+        self.original_ui()
+        self.html_text = QLabel(self)
+        self.html_text.setText("<html><head><style>body { color: white; font-size: 14px; }</style></head><body>这是HTML模式的文本</body></html>")
+        self.html_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.global_layout.addWidget(self.html_text)
+        self.set_size()
 
-    def apply_label_style(self, label):
-        label.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             log.info("事件：左键点击窗口")
@@ -286,16 +291,17 @@ class xht(QWidget):
         screen = QApplication.primaryScreen().availableGeometry()
 
         if self.windowpos == "L":
-            target_x = self.horizontal_edge_margin  # 使用统一的水平边距
-            initial_pos = QPoint(-self.width(), current_pos.y())
+            # 从左侧隐藏位置开始，移动到正常位置
+            initial_pos = QPoint(-self.width() + self.edge_height, current_pos.y())
+            target_pos = QPoint(self.horizontal_edge_margin, current_pos.y())
         elif self.windowpos == "R":
-            target_x = (screen.width() - self.width()) - self.horizontal_edge_margin  # 右侧边距
-            initial_pos = QPoint(screen.width(), current_pos.y())
+            # 从右侧隐藏位置开始，移动到正常位置
+            initial_pos = QPoint(screen.width() - self.edge_height, current_pos.y())
+            target_pos = QPoint(screen.width() - self.width() - self.horizontal_edge_margin, current_pos.y())
         else:
-            target_x = (screen.width() - self.width()) // 2
-            initial_pos = QPoint(target_x, -self.height())
-
-        target_pos = QPoint(target_x, current_pos.y())
+            # 垂直方向处理保持不变
+            initial_pos = QPoint(current_pos.x(), -self.height())
+            target_pos = QPoint(current_pos.x(), 0)
 
         if not self.show_animation:
             self.show_animation = QPropertyAnimation(self, b"pos", self)
@@ -318,14 +324,19 @@ class xht(QWidget):
         
         self.is_hiding = True
         current_pos = self.pos()
+        screen = QApplication.primaryScreen().availableGeometry()
         
         if self.windowpos in ["L", "R"]:
             if self.windowpos == "L":
-                target_x = current_pos.x() - (self.width() - self.edge_height)
+                # 保留edge_height宽度可见
+                target_x = 0 - (self.width() - self.edge_height)
             else:
-                target_x = current_pos.x() + (self.width() - self.edge_height)
+                # 保留edge_height宽度可见
+                target_x = screen.width() - self.edge_height
+                
             target_pos = QPoint(target_x, current_pos.y())
         else:
+            # 垂直方向保持原逻辑
             target_y = current_pos.y() - (self.height() - self.edge_height)
             target_pos = QPoint(current_pos.x(), target_y)
         
