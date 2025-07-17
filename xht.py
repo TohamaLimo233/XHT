@@ -49,12 +49,16 @@ class xht(QWidget):
         self.hide_animation = QPropertyAnimation(self, b"pos")   # 初始化隐藏动画
         self.is_hiding = False  # 动画状态
 
-        #身位相关
+        # 新增初始化位置动画
+        self.position_animation = QPropertyAnimation(self, b"pos")  # 初始化位置动画
+        
+        # 身位相关
         self.edge_height = 4  # 边缘
         self.horizontal_edge_margin = 16  # 水平方向边距（新增）
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
         self.windowpos = "R"  # 窗口位置
+        self.drag_threshold = 5  # 拖动触发阈值（新增）
         
         #其他
         self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
@@ -102,7 +106,17 @@ class xht(QWidget):
         log.info("程序正在启动")
         self.setMinimumSize(120, 16)
         self.setMaximumSize(600, 400)
-        self.setGeometry(0, 8, 120, 16)
+        screen = QApplication.primaryScreen().availableGeometry()
+
+        # 根据 windowpos 设置初始位置为屏幕外
+        if self.windowpos == "L":
+            initial_x = -self.width()
+        elif self.windowpos == "R":
+            initial_x = screen.width()
+        else:
+            initial_x = (screen.width() - self.width()) // 2
+
+        self.setGeometry(initial_x, self.edge_height, 120, 16)  # 使用 self.edge_height 替代硬编码值 8
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
@@ -125,7 +139,7 @@ class xht(QWidget):
 
     def handle_exception(self, exc_type, exc_value, traceback):
         error_msg = f"{exc_type.__name__}: {exc_value}"
-        log.cirical(f"严重错误: {error_msg}", exc_info=True)
+        log.critical(f"严重错误: {error_msg}", exc_info=True)
         
         QTimer.singleShot(0, lambda: self.show_error_window(error_msg))
         
@@ -159,13 +173,11 @@ class xht(QWidget):
         else:  # M
             initial_pos = QPoint(current_pos.x(), -self.height())
         
-        # 创建并启动动画
-        animation = QPropertyAnimation(self, b"pos", self)
-        animation.setDuration(250)
-        animation.setStartValue(initial_pos)
-        animation.setEndValue(current_pos)
-        animation.setEasingCurve(QEasingCurve.OutQuad)
-        animation.start()
+        self.position_animation.setDuration(250)
+        self.position_animation.setStartValue(initial_pos)
+        self.position_animation.setEndValue(current_pos)
+        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.position_animation.start()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -213,7 +225,17 @@ class xht(QWidget):
         else:
             target_x = (screen.width() - self.width()) // 2
         current_y = self.y()
-        self.move(target_x, current_y)
+        current_pos = self.pos()
+        target_pos = QPoint(target_x, current_y)
+
+        if self.position_animation.state() == QPropertyAnimation.Running:
+            self.position_animation.stop()
+
+        self.position_animation.setDuration(250)
+        self.position_animation.setStartValue(current_pos)
+        self.position_animation.setEndValue(target_pos)
+        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.position_animation.start()
 
     def set_size(self):
         self.layout().activate()
@@ -267,19 +289,46 @@ class xht(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            log.info("事件：左键点击窗口")
-            if self.is_hidden:
-                self.show_with_animation()
-            else:
-                self.hide_with_animation()
-            return
-        if event.button() == Qt.RightButton:
-            log.info("事件：右键点击窗口")
-            return
-        if event.button() == Qt.MiddleButton:
-            log.info("事件：中键点击窗口")
-            return
+            self.drag_start_pos = event.globalPos()
+            self.window_start_pos = self.pos()  # 新增记录窗口初始位置
+            self.is_dragging = False
         super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            if self.drag_start_pos is not None:
+                delta = event.globalPos() - self.drag_start_pos
+                if not self.is_dragging and (abs(delta.x()) > self.drag_threshold or abs(delta.y()) > self.drag_threshold):
+                    self.is_dragging = True
+                if self.is_dragging:
+                    # 实时水平拖动逻辑
+                    new_x = self.window_start_pos.x() + delta.x()
+                    self.move(new_x, self.window_start_pos.y())  # 保持原Y坐标不变
+        super().mouseMoveEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.toggle()
+        super().mouseDoubleClickEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self.is_dragging:
+            screen = QApplication.primaryScreen().availableGeometry()
+            screen_width = screen.width()
+            window_center = self.pos().x() + self.width() / 2
+
+            # 根据窗口中心相对于屏幕宽度的比例划分区域
+            if window_center < screen_width * 0.33:
+                self.windowpos = "L"  # 左侧1/3区域判定为L
+            elif window_center > screen_width * 0.66:
+                self.windowpos = "R"  # 右侧1/3区域判定为R
+            else:
+                self.windowpos = "M"  # 中间50%区域判定为M
+
+            self.update_position()
+        self.drag_start_pos = None
+        self.is_dragging = False
+        super().mouseReleaseEvent(event)
 
     def show_with_animation(self):
         log.info("执行动作：显示")
@@ -293,15 +342,15 @@ class xht(QWidget):
         if self.windowpos == "L":
             # 从左侧隐藏位置开始，移动到正常位置
             initial_pos = QPoint(-self.width() + self.edge_height, current_pos.y())
-            target_pos = QPoint(self.horizontal_edge_margin, current_pos.y())
+            target_pos = QPoint(self.horizontal_edge_margin, self.window_start_pos.y())  # 修复：使用 window_start_pos.y()
         elif self.windowpos == "R":
             # 从右侧隐藏位置开始，移动到正常位置
             initial_pos = QPoint(screen.width() - self.edge_height, current_pos.y())
-            target_pos = QPoint(screen.width() - self.width() - self.horizontal_edge_margin, current_pos.y())
+            target_pos = QPoint(screen.width() - self.width() - self.horizontal_edge_margin, self.window_start_pos.y())  # 修复：使用 window_start_pos.y()
         else:
             # 垂直方向处理保持不变
             initial_pos = QPoint(current_pos.x(), -self.height())
-            target_pos = QPoint(current_pos.x(), 0)
+            target_pos = QPoint(current_pos.x(), self.edge_height)
 
         if not self.show_animation:
             self.show_animation = QPropertyAnimation(self, b"pos", self)
