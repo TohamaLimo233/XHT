@@ -66,7 +66,7 @@ class xht(QWidget):
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("res/icon/tray_de.ico"))
+        self.tray_icon.setIcon(QIcon("res/icon/common.ico"))
         self.tray_icon.setToolTip("小黑条-正常运行中")
         self.tray_icon.activated.connect(self.handle_tray_activation)
           
