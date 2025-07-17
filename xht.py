@@ -10,7 +10,6 @@ import API
 # import LogMaker
 from loguru import logger as log
 import UI.About as AboutUI
-import pages.main
 
 print(" __   ___    _ _______ ")
 print(" \\ \\ / / |  | |__   __|")
