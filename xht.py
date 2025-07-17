@@ -121,8 +121,8 @@ class xht(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
 
-        #self.original_ui()
-        self.html_ui()
+        self.original_ui()
+        #self.html_ui()
         self.reg_timers()
         self.update_weather()
         
