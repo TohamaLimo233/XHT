@@ -1,5 +1,4 @@
 requests
-RinUI
 loguru
 PySide6
 pygetwindow
