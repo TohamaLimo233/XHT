@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSyste
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property, QEvent
 
-import pygetwindow as gw
 import os, subprocess
 import platform
 import API
@@ -26,6 +25,10 @@ log.info(f"""
          OS版本：{platform.release()}
          Python版本：{platform.python_version()}
          PID：{os.getpid()}""")
+if platform.system() == "Windows" or platform.system() == "Darwin":
+    import pygetwindow as gw
+elif platform.system() == "Linux":
+    from ewmh import ewmh
 
 
 class xht(QWidget):
@@ -44,7 +47,7 @@ class xht(QWidget):
 
         #动画
         self.size_animation = QPropertyAnimation(self, b"size")  # 初始化尺寸动画
-        self.size_animation.setDuration(180)  # 将 300 替换为期望的毫秒数
+        self.size_animation.setDuration(180)
         self.show_animation = QPropertyAnimation(self, b"pos")   # 初始化显示动画
         self.hide_animation = QPropertyAnimation(self, b"pos")   # 初始化隐藏动画
         self.is_hiding = False  # 动画状态
@@ -54,14 +57,15 @@ class xht(QWidget):
         
         # 身位相关
         self.edge_height = 4  # 边缘
-        self.horizontal_edge_margin = 16  # 水平方向边距（新增）
+        self.horizontal_edge_margin = 4  # 水平方向边距
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
         self.windowpos = "R"  # 窗口位置
-        self.drag_threshold = 5  # 拖动触发阈值（新增）
-        
+        self.drag_threshold = 8  # 拖动触发阈值
+        self.window_start_pos = None
+
         #其他
-        self.fullscreen_apps = ["Power1Point ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
+        self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
         self.citydata = None
         
         # 添加系统托盘图标支持
@@ -301,6 +305,9 @@ class xht(QWidget):
                 if not self.is_dragging and (abs(delta.x()) > self.drag_threshold or abs(delta.y()) > self.drag_threshold):
                     self.is_dragging = True
                 if self.is_dragging:
+                    # 如果 window_start_pos 未初始化，则使用当前窗口位置
+                    if self.window_start_pos is None:
+                        self.window_start_pos = self.pos()
                     # 实时水平拖动逻辑
                     new_x = self.window_start_pos.x() + delta.x()
                     self.move(new_x, self.window_start_pos.y())  # 保持原Y坐标不变
@@ -339,14 +346,21 @@ class xht(QWidget):
         current_pos = self.pos()
         screen = QApplication.primaryScreen().availableGeometry()
 
+        # 确定 Y 坐标：优先使用 window_start_pos，否则使用当前 Y
+        window_y = current_pos.y()
+        if self.window_start_pos is not None:
+            window_y = self.window_start_pos.y()
+
         if self.windowpos == "L":
             # 从左侧隐藏位置开始，移动到正常位置
             initial_pos = QPoint(-self.width() + self.edge_height, current_pos.y())
-            target_pos = QPoint(self.horizontal_edge_margin, self.window_start_pos.y())  # 修复：使用 window_start_pos.y()
+            target_pos = QPoint(self.horizontal_edge_margin, window_y)
         elif self.windowpos == "R":
+            screen_width = screen.width()
+            screen_width_minus_margin = screen_width - self.width() - self.horizontal_edge_margin
             # 从右侧隐藏位置开始，移动到正常位置
-            initial_pos = QPoint(screen.width() - self.edge_height, current_pos.y())
-            target_pos = QPoint(screen.width() - self.width() - self.horizontal_edge_margin, self.window_start_pos.y())  # 修复：使用 window_start_pos.y()
+            initial_pos = QPoint(screen_width - self.edge_height, current_pos.y())
+            target_pos = QPoint(screen_width_minus_margin, window_y)
         else:
             # 垂直方向处理保持不变
             initial_pos = QPoint(current_pos.x(), -self.height())
@@ -408,17 +422,30 @@ class xht(QWidget):
 
     def fcd(self):
         try:
-            active_window = gw.getActiveWindow()
-            if not active_window:
-                return
-            try:
-                self.title = active_window.title
-            except AttributeError:
-                self.title = ""
-                
+            if platform.system() == "Linux":
+                try:
+                    ewmh_obj = ewmh.EWMH()
+                    active_window = ewmh_obj.getActiveWindow()
+                    if active_window:
+                        self.title = ewmh_obj.getWmName(win=active_window)
+                    else:
+                        self.title = ""
+                except Exception as e:
+                    log.warning(f"Linux窗口检测异常: {str(e)}")
+                    self.title = ""
+            else:
+                # 原有Windows/macOS逻辑保留
+                active_window = gw.getActiveWindow()
+                if not active_window:
+                    return
+                try:
+                    self.title = active_window.title
+                except AttributeError:
+                    self.title = ""
+
             if not isinstance(self.title, str):
                 return
-                
+
             if any(keyword in self.title for keyword in self.fullscreen_apps):
                 if not self.is_hidden and not self.auto_hide:
                     log.info(f"事件：指定的程序触发隐藏")
@@ -430,7 +457,7 @@ class xht(QWidget):
                     self.auto_hide = False
                     self.show_with_animation()
         except Exception as e:
-            log.warn(f"窗口检测异常: {str(e)}")
+            log.warning(f"窗口检测异常: {str(e)}")
 
     def show_about_window(self):
         """显示关于窗口"""
