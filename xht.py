@@ -9,7 +9,7 @@ import platform
 import API
 # import LogMaker
 from loguru import logger as log
-import UI.About as AboutUI
+import UI.about as AboutUI
 
 print(" __   ___    _ _______ ")
 print(" \\ \\ / / |  | |__   __|")
