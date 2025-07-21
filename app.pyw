@@ -19,11 +19,6 @@ if __name__ == '__main__':
                           color: black;
                           font-size: 12px;
                           background-color: #e0e0e0;
-                          }
-                          QLabel {
-                          color: white; 
-                          font-size: 18px; 
-                          font-weight: bold;
                           }""")
         try:
             window = xht.xht()

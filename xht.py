@@ -73,6 +73,14 @@ class xht(QWidget):
         self.tray_icon.setIcon(QIcon("res/icon/common.ico"))
         self.tray_icon.setToolTip("小黑条-正常运行中")
         self.tray_icon.activated.connect(self.handle_tray_activation)
+
+        # 加载样式表
+        self.setStyleSheet("""
+                           QLabel {
+                           color: white; 
+                           font-size: 18px; 
+                           font-weight: bold;
+                           }""")
           
         self.create_tray_menu()        
         self.initUI()
