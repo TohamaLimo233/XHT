@@ -1,32 +1,82 @@
 from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
-from PySide6.QtGui import (QPixmap)
-from PySide6.QtWidgets import (QLabel, QVBoxLayout, QWidget)
+from PySide6.QtGui import (QFont, QPixmap)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QVBoxLayout, QWidget)
 
 class Ui_AboutWindow(object):
     def setupUi(self, AboutWindow):
         if not AboutWindow.objectName():
             AboutWindow.setObjectName(u"AboutWindow")
-        AboutWindow.resize(400, 300)
-        AboutWindow.setMinimumSize(QSize(400, 300))
-        AboutWindow.setMaximumSize(QSize(400, 300))
+        AboutWindow.resize(320, 250)
+        AboutWindow.setMinimumSize(QSize(320, 250))
+        AboutWindow.setMaximumSize(QSize(320, 250))
         self.centralwidget = QWidget(AboutWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout = QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setPixmap(QPixmap(u"xhtlogo.ico"))
+        self.label.setPixmap(QPixmap(u"res/icon/xht.png"))
+        self.label.setScaledContents(False)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setWordWrap(False)
 
-        self.verticalLayout.addWidget(self.label)
+        self.verticalLayout_2.addWidget(self.label)
 
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
+        font = QFont()
+        font.setFamilies([u"Microsoft YaHei UI"])
+        font.setPointSize(24)
+        font.setBold(True)
+        font.setItalic(False)
+        self.label_2.setFont(font)
+        self.label_2.setStyleSheet(u"")
         self.label_2.setTextFormat(Qt.TextFormat.AutoText)
         self.label_2.setScaledContents(False)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setOpenExternalLinks(True)
 
         self.verticalLayout.addWidget(self.label_2)
+
+        self.label_3 = QLabel(self.centralwidget)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_3)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_5 = QLabel(self.centralwidget)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setTextFormat(Qt.TextFormat.RichText)
+        self.label_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_5.setOpenExternalLinks(True)
+
+        self.horizontalLayout.addWidget(self.label_5)
+
+        self.label_4 = QLabel(self.centralwidget)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setTextFormat(Qt.TextFormat.RichText)
+        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_4.setOpenExternalLinks(True)
+
+        self.horizontalLayout.addWidget(self.label_4)
+
+        self.label_6 = QLabel(self.centralwidget)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setTextFormat(Qt.TextFormat.RichText)
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_6.setOpenExternalLinks(True)
+
+        self.horizontalLayout.addWidget(self.label_6)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+
+        self.verticalLayout_2.addLayout(self.verticalLayout)
 
         AboutWindow.setCentralWidget(self.centralwidget)
 
@@ -37,16 +87,8 @@ class Ui_AboutWindow(object):
     def retranslateUi(self, AboutWindow):
         AboutWindow.setWindowTitle(QCoreApplication.translate("AboutWindow", u"\u5173\u4e8e", None))
         self.label.setText("")
-        self.label_2.setText(QCoreApplication.translate("AboutWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:36pt;\">\u5c0f\u9ed1\u6761</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">0.0.1 Dev</span></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-bloc"
-                        "k-indent:0; text-indent:0px;\"><a href=\"https://github.com/GuzhMtangeroou/XHT/blob/main/LICENSE\"><span style=\" text-decoration: underline; color:#094fd1;\">\u5f00\u6e90\u534f\u8bae</span></a></p>\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://github.com/GuzhMtangeroou/XHT\"><span style=\" text-decoration: underline; color:#094fd1;\">Github</span></a></p></body></html>", None))
-
+        self.label_2.setText(QCoreApplication.translate("AboutWindow", u"\u5c0f\u9ed1\u6761", None))
+        self.label_3.setText(QCoreApplication.translate("AboutWindow", u"0.0.1 Dev", None))
+        self.label_5.setText(QCoreApplication.translate("AboutWindow", u"<p><a href=\"https://github.com/TohamaLimo233/XHT\" title=\"Github\">Github</a>", None))
+        self.label_4.setText(QCoreApplication.translate("AboutWindow", u"<html><head/><body><p><a href=\"https://github.com/TohamaLimo233/XHT/blob/main/LICENSE\"><span style=\" text-decoration: underline; color:#313f4c;\">\u5f00\u6e90\u534f\u8bae</span></a></p></body></html>", None))
+        self.label_6.setText(QCoreApplication.translate("AboutWindow", u"<p><a href=\"https://classwidgets.rinlit.cn\" title=\"Github\">ClassWidgets(\u53cb\u94fe)</a>", None))

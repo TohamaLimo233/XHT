@@ -1,16 +1,21 @@
 import json
 import os
+import LogMaker
 
+log = LogMaker.logger()
 
-class Config:
-    def __init__(self):
-        self.config_file = os.path.join(os.path.dirname(__file__), "config.json")
-        self.config = self.load_config()
+DEFAULT_CONFIG = {}
+def check():
+    if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "appsettings.json")):
+        os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"))
+        with open("config/appsettings.json", "w") as f:
+            json.dump(DEFAULT_CONFIG, f, indent=4)
+        log.warn("配置文件不存在，已创建默认配置文件")
+        return
+    
 
-    def load_config(self):
-        try:
-            with open(self.config_file, "r") as f:
-                config = json.load(f)
-            return config
-        except FileNotFoundError:
-            raise FileNotFoundError
+def load_config():
+    check()
+    with open("config/appsettings.json", "r") as f:
+        config = json.load(f)
+    return config

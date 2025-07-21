@@ -1,15 +1,16 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property, QEvent
-
+from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import os, subprocess
 import platform
-import API
-# import LogMaker
-from loguru import logger as log
-import UI.About as AboutUI
 
+import UI.About as AboutUI
+import LogMaker
+import Config
+import API
+
+#Banner
 print(" __   ___    _ _______ ")
 print(" \\ \\ / / |  | |__   __|")
 print("  \\ V /| |__| |  | |   ")
@@ -17,19 +18,19 @@ print("   > < |  __  |  | |   ")
 print("  / . \\| |  | |  | |   ")
 print(" /_/ \\_\\_|  |_|  |_|   ")
 
-log.add("out.log")
-log.add(sys.stderr, level="DEBUG")
+log = LogMaker.logger()
 
 log.info(f"""
-         运行平台：{platform.system()}
-         OS版本：{platform.release()}
-         Python版本：{platform.python_version()}
-         PID：{os.getpid()}""")
+运行平台：{platform.system()}
+OS版本：{platform.release()}
+Python版本：{platform.python_version()}
+PID：{os.getpid()}""")
 if platform.system() == "Windows" or platform.system() == "Darwin":
     import pygetwindow as gw
 elif platform.system() == "Linux":
     from ewmh import ewmh
-
+#常量
+VERSION = "0.0.1 Dev"
 
 class xht(QWidget):
     def __init__(self):        
@@ -37,7 +38,9 @@ class xht(QWidget):
         #先决条件
         sys.excepthook = self.handle_exception
         self.weather_api = API.WeatherAPI()
-        #self.config = Config.Config().load_config()
+        self.config = Config.load_config()
+        work_path = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(work_path, "config","config.json")
 
         self.background_color = QColor(0, 0, 0)
 
