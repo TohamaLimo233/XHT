@@ -6,9 +6,9 @@ import os, subprocess
 import platform
 
 import UI.About as AboutUI
-import LogMaker
-import Config
-import API
+import Lib.LogMaker as LogMaker
+import Lib.Config as Config
+import Lib.API as API
 
 #Banner
 print(" __   ___    _ _______ ")
@@ -29,8 +29,6 @@ if platform.system() == "Windows" or platform.system() == "Darwin":
     import pygetwindow as gw
 elif platform.system() == "Linux":
     from ewmh import ewmh
-#常量
-VERSION = "0.0.1 Dev"
 
 class xht(QWidget):
     def __init__(self):        

@@ -109,7 +109,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/TohamaLimo233/XHT/blob/main/LICENSE&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#313f4c;&quot;&gt;开源协议&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;p&gt;&lt;a href=&quot;https://github.com/TohamaLimo233/XHT/blob/main/LICENSE&quot; title=&quot;开源协议&quot;&gt;开源协议&lt;/a&gt;</string>
           </property>
           <property name="textFormat">
            <enum>Qt::TextFormat::RichText</enum>

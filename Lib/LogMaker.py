@@ -7,7 +7,7 @@ import sys
 class logger:
     def __init__(self):
         log.add(f"log/{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
-        log.add(sys.stderr, level="DEBUG")
+        #log.add(sys.stderr, level="DEBUG")
 
     def debug(self, msg):
         log.debug(msg)
