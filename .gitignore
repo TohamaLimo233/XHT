@@ -6,4 +6,4 @@ build/
 dist/
 *.spec
 .vscode/
-RinUI
+config/
