@@ -42,11 +42,9 @@ pip3 install -r requirements.txt
 <br>2.1 Linux需要安装xcb插件：`sudo apt install libxcb-*`
 <br>3、打开`app.pyw` ,and enjoy it!
 
-### Windows
-
 ## 开发环境信息：
-|系统                            |版本                  |其他信息         |
-|--------------------------------|----------------------|----------------|
-|Windows 11                      |10.0.26100.4652
-|macOS Sequoia                   |15.5 (24F74)
-|Linux Mint                      |22.1 Cinnamon Edition  |已知Linux需要安装xcb插件（sudo apt install libxcb-*）
+|系统                            |版本                  |Python版本|其他信息         |
+|-------------------------------|----------------------|---------|----------------|
+|Windows 11                      |10.0.26100.4652      |3.12&3.8.6
+|macOS Sequoia                   |15.5 (24F74)         |3.12
+|Linux Mint                      |22.1 Cinnamon Edition|忘了（bushi|已知Linux需要安装xcb插件（sudo apt install libxcb-*）
