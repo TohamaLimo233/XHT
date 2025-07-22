@@ -5,10 +5,8 @@ from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTi
 import os, subprocess
 import platform
 
+from Lib import API, Config, LogMaker
 import UI.About as AboutUI
-import Lib.LogMaker as LogMaker
-import Lib.Config as Config
-import Lib.API as API
 
 #Banner
 print(" __   ___    _ _______ ")
@@ -215,17 +213,9 @@ class xht(QWidget):
 
     def update_weather(self):
         if self.ui_type  == "original":
-            city = self.weather_api.GetCity()
-            if city == "获取城市信息失败":
-                return
-            self.citydata = city  # 更新城市数据
-            city_id = self.weather_api.LookupCity(city["city"]+"."+city["name"])
-            data = self.weather_api.FetchWeatherData(city_id)
-            if isinstance(data, dict):
-                weather_desc = data["weather_desc"]
-                temp = data["temp"] + data["unit"]
-                self.weather_label.setText(f"{weather_desc} {temp}")
-                log.info(f"{city["city"]+"."+city["name"]}的天气数据更新成功")
+            weather = self.weather_api.GetWeather()
+            self.weather_label.setText(weather["weather"] + " " + str(weather["temperature"]) + weather["unit"])
+            log.info(f"{weather["region"]}的天气数据更新成功")
         else:
             return
 
