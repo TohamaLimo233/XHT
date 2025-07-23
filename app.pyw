@@ -1,4 +1,4 @@
-import Lib.xht as xht
+import APP.xht as xht
 import sys
 from PySide6.QtWidgets import QApplication
 

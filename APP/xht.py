@@ -5,7 +5,7 @@ from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTi
 import os, subprocess
 import platform
 
-from Lib import API, Config, LogMaker
+from APP import API, Config, LogMaker
 import UI.About as AboutUI
 
 #Banner
@@ -55,16 +55,16 @@ class xht(QWidget):
         self.position_animation = QPropertyAnimation(self, b"pos")  # 初始化位置动画
         
         # 身位相关
-        self.edge_height = 4  # 边缘
-        self.horizontal_edge_margin = 4  # 水平方向边距
+        self.edge_height = self.config.get("edge_height")  # 边缘
+        self.horizontal_edge_margin = self.config.get("horizontal_edge_margin")  # 水平方向边距
         self.is_hidden = False  # 是否隐藏
         self.auto_hide = False # 自动隐藏
-        self.windowpos = "R"  # 窗口位置
-        self.drag_threshold = 8  # 拖动触发阈值
+        self.windowpos = self.config.get("windowpos")  # 窗口位置
+        self.drag_threshold = self.config.get("drag_threshold")  # 拖动触发阈值
         self.window_start_pos = None
 
         #其他
-        self.fullscreen_apps = ["PowerPoint ", "WPS Presentation Slide ", "希沃白板"]  # 全屏检测关键词列表
+        self.fullscreen_apps = self.config.get("auto_hide_apps")  # 全屏检测关键词列表
         self.citydata = None
         
         # 添加系统托盘图标支持
@@ -324,12 +324,12 @@ class xht(QWidget):
             window_center = self.pos().x() + self.width() / 2
 
             # 根据窗口中心相对于屏幕宽度的比例划分区域
-            if window_center < screen_width * 0.33:
-                self.windowpos = "L"  # 左侧1/3区域判定为L
-            elif window_center > screen_width * 0.66:
-                self.windowpos = "R"  # 右侧1/3区域判定为R
+            if window_center < screen_width * 0.30:
+                self.windowpos = "L"  
+            elif window_center > screen_width * 0.70:
+                self.windowpos = "R"  
             else:
-                self.windowpos = "M"  # 中间50%区域判定为M
+                self.windowpos = "M"  
 
             self.update_position()
         self.drag_start_pos = None
@@ -337,7 +337,7 @@ class xht(QWidget):
         super().mouseReleaseEvent(event)
 
     def show_with_animation(self):
-        log.info("执行动作：显示")
+        log.info("事件：显示")
         if self.is_hiding or not self.is_hidden:
             return
 
@@ -380,7 +380,7 @@ class xht(QWidget):
         self.show_animation.start()
 
     def hide_with_animation(self):
-        log.info("执行动作：隐藏")
+        log.info("事件：隐藏")
         if self.is_hiding:
             return
         
@@ -464,4 +464,5 @@ class xht(QWidget):
         self.about_window = QMainWindow()
         ui = AboutUI.Ui_AboutWindow()
         ui.setupUi(self.about_window)
+        log.info("事件：显示关于窗口")
         self.about_window.show()

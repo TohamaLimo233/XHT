@@ -9,6 +9,7 @@ class Ui_AboutWindow(object):
         AboutWindow.resize(320, 250)
         AboutWindow.setMinimumSize(QSize(320, 250))
         AboutWindow.setMaximumSize(QSize(320, 250))
+        AboutWindow.setWindowFlags(Qt.WindowType.WindowCloseButtonHint)
         self.centralwidget = QWidget(AboutWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_2 = QVBoxLayout(self.centralwidget)

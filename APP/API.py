@@ -1,6 +1,5 @@
 import requests
 import json
-import os
 
 
 
@@ -37,12 +36,14 @@ class WeatherAPI():
                     "weather": self.GetWeatherStatus(code=data['current']['weather_code'])
                 }
                 return weather
+            else:
+                return "获取天气信息失败"
         except Exception as e:
             return f"获取天气信息失败{str(e)}:"
             
 
     def ReadWeatherStatus(self):
-        with open("res/weather/weather_status.json", "r") as file:
+        with open("res/weather/weather_status.json", "r", encoding="utf-8") as file:
             return json.load(file)
 
     def GetWeatherStatus(self, code):
