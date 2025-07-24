@@ -25,7 +25,7 @@ class WeatherAPI():
     def GetWeather(self):
         try:
             location = self.GetLocation()
-            url = f"https://api.open-meteo.com/v1/forecast?latitude={location["latitude"]}&longitude={location["longitude"]}&current=temperature_2m,weather_code"
+            url = f"https://api.open-meteo.com/v1/forecast?latitude={location["latitude"]}&longitude={location["longitude"]}&current=temperature_2m,weather_code&models=cma_grapes_global"
             resp = requests.get(url, headers=self.headers, timeout=5)
             if resp.status_code == 200:
                 data = resp.json()

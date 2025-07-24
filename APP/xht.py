@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
-import os, subprocess
+import os, subprocess, threading
 import platform
 
 from APP import API, Config, LogMaker
@@ -133,10 +133,9 @@ class xht(QWidget):
         self.setWindowTitle('XHT')
 
         self.original_ui()
+        threading.Thread(target=self.update_weather).start()
         #self.html_ui()
         self.reg_timers()
-        self.update_weather()
-        
         self.tray_icon.show()
 
     def getBackgroundColor(self):
@@ -202,7 +201,7 @@ class xht(QWidget):
 
     def update_time(self):
         if self.ui_type  == "original":
-            self.current_time = QTime.currentTime().toString("hh:mm") + " "
+            self.current_time = QTime.currentTime().toString("hh:mm")
             if  self.ui_type == "original":
                 self.time_label.setText(self.current_time)
                 #self.a=self.a+510
@@ -214,7 +213,7 @@ class xht(QWidget):
     def update_weather(self):
         if self.ui_type  == "original":
             weather = self.weather_api.GetWeather()
-            self.weather_label.setText(weather["weather"] + " " + str(weather["temperature"]) + weather["unit"])
+            self.weather_label.setText("  " + weather["weather"] + " " + str(weather["temperature"]) + weather["unit"])
             log.info(f"{weather["region"]}的天气数据更新成功")
         else:
             return
@@ -269,7 +268,9 @@ class xht(QWidget):
         log.info("UI模式切换：original")
         self.ui_type = "original"
         self.time_label = QLabel(self)
+        self.time_label.setText(QTime.currentTime().toString("hh:mm"))
         self.weather_label = QLabel(self)
+        self.weather_label.setText("获取信息中")
         self.weather_label.installEventFilter(self)
         
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -278,6 +279,7 @@ class xht(QWidget):
         self.global_layout = QHBoxLayout()
         self.global_layout.addWidget(self.time_label)
         self.global_layout.addWidget(self.weather_label)
+
         self.setLayout(self.global_layout)
         self.set_size()
     def html_ui(self):
