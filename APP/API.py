@@ -13,12 +13,12 @@ class WeatherAPI():
 
     def GetLocation(self):
         try:
-            ctb = requests.get(f"https://api.ip.sb/geoip", headers=self.headers, timeout=5).json()
+            ctb = requests.get(f"https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1", headers=self.headers, timeout=5).json()
             return {
-                "latitude": ctb['latitude'],
-                "longitude": ctb['longitude'],
-                "region": ctb['region']
-                }
+            "latitude": ctb['data']['latitude'],
+            "longitude": ctb['data']['longitude'],                
+            "region": ctb['data']['cityCN']
+            }
         except requests.exceptions.RequestException as e:
             return "获取城市信息失败"
         
