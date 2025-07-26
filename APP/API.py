@@ -15,18 +15,18 @@ class WeatherAPI():
         try:
             ctb = requests.get(f"https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1", headers=self.headers, timeout=5).json()
             return {
-            "latitude": ctb['data']['latitude'],
-            "longitude": ctb['data']['longitude'],                
+            "latitude": ctb['data']["latitude"],
+            "longitude": ctb['data']["longitude"],                
             "region": ctb['data']['cityCN']
             }
         except requests.exceptions.RequestException as e:
-            return "获取城市信息失败"
+            return {}
         
     def GetWeather(self):
         try:
             location = self.GetLocation()
             url = f"https://api.open-meteo.com/v1/forecast?latitude={location["latitude"]}&longitude={location["longitude"]}&current=temperature_2m,weather_code&models=cma_grapes_global"
-            resp = requests.get(url, headers=self.headers, timeout=5)
+            resp = requests.get(url, headers=self.headers, timeout=8)
             if resp.status_code == 200:
                 data = resp.json()
                 weather =  {
@@ -37,9 +37,10 @@ class WeatherAPI():
                 }
                 return weather
             else:
-                return "获取天气信息失败"
+                return {}
         except Exception as e:
-            return f"获取天气信息失败{str(e)}:"
+            print(e)
+            return {'error':str(e)}
             
 
     def ReadWeatherStatus(self):

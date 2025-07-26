@@ -11,11 +11,10 @@ DEFAULT_CONFIG = {
     "windowpos": "R",
     "auto_hide_apps": ["PowerPoint ", "WPS Presentation Slide "]    
 }
-def check():
-    config_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-    config_file = os.path.join(config_dir, "appsettings.json")
-    if not os.path.exists(config_dir):
-        os.makedirs(config_dir)
+def check(p):
+    config_file = os.path.join(p, "appsettings.json")
+    if not os.path.exists(p):
+        os.makedirs(p)
     if not os.path.exists(config_file):
         with open(config_file, "w") as f:
             json.dump(DEFAULT_CONFIG, f, indent=4)
@@ -24,10 +23,9 @@ def check():
     else:
         return    
 
-def load_config():
-    check()
-    config_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-    config_file = os.path.join(config_dir, "appsettings.json")
+def load_config(path):
+    check(path)
+    config_file = os.path.join(path, "appsettings.json")
     try:
         with open(config_file, "r") as f:
             config = json.load(f)

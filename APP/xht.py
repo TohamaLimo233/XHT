@@ -34,11 +34,10 @@ class xht(QWidget):
         #先决条件
         sys.excepthook = self.handle_exception
         self.weather_api = API.WeatherAPI()
-        self.config = Config.load_config()
         work_path = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(work_path, "config","config.json")
-
+        config_path = os.path.join(work_path, "config")
         self.background_color = QColor(0, 0, 0)
+        self.config = Config.load_config(config_path)
 
         #布局
         self.global_layout = None # 全局布局
@@ -213,7 +212,7 @@ class xht(QWidget):
     def update_weather(self):
         if self.ui_type  == "original":
             weather = self.weather_api.GetWeather()
-            self.weather_label.setText("  " + weather["weather"] + " " + str(weather["temperature"]) + weather["unit"])
+            self.weather_label.setText(f"  {weather.get("weather")} {str(weather["temperature"])}{weather["unit"]}")
             log.info(f"{weather["region"]}的天气数据更新成功")
         else:
             return
