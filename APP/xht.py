@@ -5,7 +5,7 @@ from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTi
 import os, subprocess, threading
 import platform
 
-from APP import API, Config, LogMaker
+from APP import API, LogMaker, Config
 import UI.About as AboutUI
 
 #Banner
@@ -29,13 +29,11 @@ elif platform.system() == "Linux":
     from ewmh import ewmh
 
 class xht(QWidget):
-    def __init__(self):        
+    def __init__(self, config_path):        
         super().__init__()
         #先决条件
         sys.excepthook = self.handle_exception
         self.weather_api = API.WeatherAPI()
-        work_path = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(work_path, "config")
         self.background_color = QColor(0, 0, 0)
         self.config = Config.load_config(config_path)
 
@@ -64,7 +62,6 @@ class xht(QWidget):
 
         #其他
         self.fullscreen_apps = self.config.get("auto_hide_apps")  # 全屏检测关键词列表
-        self.citydata = None
         
         # 添加系统托盘图标支持
         self.tray_icon = QSystemTrayIcon(self)
@@ -467,3 +464,17 @@ class xht(QWidget):
         ui.setupUi(self.about_window)
         log.info("事件：显示关于窗口")
         self.about_window.show()
+
+    def refresh(self, config_path):
+        """刷新窗口"""
+        if self.ui_type == "original":
+            self.config = Config.load_config(config_path)
+            self.edge_height = self.config.get("edge_height")  # 边缘
+            self.horizontal_edge_margin = self.config.get("horizontal_edge_margin")  # 水平方向边距
+            self.windowpos = self.config.get("windowpos")  # 窗口位置
+            self.drag_threshold = self.config.get("drag_threshold")  # 拖动触发阈值
+            self.fullscreen_apps = self.config.get("auto_hide_apps")
+            self.update_position()
+            self.set_size()
+            self.update_time()
+            self.update_weather()
