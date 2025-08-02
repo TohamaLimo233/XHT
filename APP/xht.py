@@ -461,7 +461,7 @@ class xht(QWidget):
                 except AttributeError:
                     self.title = ""
         except Exception as e:
-            log.warn(f"窗口检测异常: {str(e)}")
+            log.warning(f"窗口检测异常: {str(e)}")
 
     def show_about_window(self):
         """显示关于窗口"""

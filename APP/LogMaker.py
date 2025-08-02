@@ -13,7 +13,7 @@ class logger:
         log.debug(msg)
     def info(self, msg):
         log.info(msg)
-    def warn(self, msg):
+    def warning(self, msg):
         log.warning(msg)
     def error(self, msg):
         log.error(msg)
