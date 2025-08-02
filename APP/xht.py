@@ -123,16 +123,49 @@ class xht(QWidget):
         else:
             initial_x = (screen.width() - self.width()) // 2
 
-        self.setGeometry(initial_x, self.edge_height, 120, 16)  # 使用 self.edge_height 替代硬编码值 8
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
+        self.setGeometry(initial_x, self.edge_height, 120, 16)
+
+        # 设置窗口标志并优化 Wayland 支持
+        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
+        if platform.system() == "Linux":
+            session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
+            if session_type == "wayland":
+                self.setAttribute(Qt.WA_NativeWindow, True)
+                flags = Qt.WindowType.Window  # Use a native window type for Wayland support
+
+        self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
 
         self.original_ui()
         threading.Thread(target=self.update_weather).start()
-        #self.html_ui()
         self.reg_timers()
         self.tray_icon.show()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.update_position()
+        
+        screen = QApplication.primaryScreen().availableGeometry()
+        current_pos = self.pos()
+        
+        # 根据windowpos确定初始位置
+        if self.windowpos == "L":
+            initial_pos = QPoint(-self.width(), current_pos.y())
+        elif self.windowpos == "R":
+            initial_pos = QPoint(screen.width(), current_pos.y())
+        else:  # M
+            initial_pos = QPoint(current_pos.x(), -self.height())
+        
+        # 在 Wayland 环境下避免动画导致窗口不可见
+        if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
+            self.move(initial_pos)
+        else:
+            self.position_animation.setDuration(250)
+            self.position_animation.setStartValue(initial_pos)
+            self.position_animation.setEndValue(current_pos)
+            self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+            self.position_animation.start()
 
     def getBackgroundColor(self):
         return self.background_color
@@ -164,26 +197,6 @@ class xht(QWidget):
         self.fullscreen_check_timer = QTimer(self)
         self.fullscreen_check_timer.timeout.connect(self.fcd)
         self.fullscreen_check_timer.start(2000)
-    def showEvent(self, event):
-        super().showEvent(event)
-        self.update_position()
-        
-        screen = QApplication.primaryScreen().availableGeometry()
-        current_pos = self.pos()
-        
-        # 根据windowpos确定初始位置
-        if self.windowpos == "L":
-            initial_pos = QPoint(-self.width(), current_pos.y())
-        elif self.windowpos == "R":
-            initial_pos = QPoint(screen.width(), current_pos.y())
-        else:  # M
-            initial_pos = QPoint(current_pos.x(), -self.height())
-        
-        self.position_animation.setDuration(250)
-        self.position_animation.setStartValue(initial_pos)
-        self.position_animation.setEndValue(current_pos)
-        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
-        self.position_animation.start()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -422,18 +435,24 @@ class xht(QWidget):
     def fcd(self):
         try:
             if platform.system() == "Linux":
-                try:
-                    ewmh_obj = ewmh.EWMH()
-                    active_window = ewmh_obj.getActiveWindow()
-                    if active_window:
-                        self.title = ewmh_obj.getWmName(win=active_window)
-                    else:
-                        self.title = ""
-                except Exception as e:
-                    log.warning(f"Linux窗口检测异常: {str(e)}")
+                import os
+                session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
+                if session_type == "wayland":
+                    log.warning("检测到 Wayland 环境，自动隐藏功能可能无法正常工作。")
                     self.title = ""
+                else:
+                    try:
+                        ewmh_obj = ewmh.EWMH()
+                        active_window = ewmh_obj.getActiveWindow()
+                        if active_window:
+                            self.title = ewmh_obj.getWmName(win=active_window)
+                        else:
+                            self.title = ""
+                    except Exception as e:
+                        log.warning(f"Linux 窗口检测异常: {str(e)}")
+                        self.title = ""
             else:
-                # 原有Windows/macOS逻辑保留
+                # 原有 Windows/macOS 逻辑
                 active_window = gw.getActiveWindow()
                 if not active_window:
                     return
@@ -441,22 +460,8 @@ class xht(QWidget):
                     self.title = active_window.title
                 except AttributeError:
                     self.title = ""
-
-            if not isinstance(self.title, str):
-                return
-
-            if any(keyword in self.title for keyword in self.fullscreen_apps):
-                if not self.is_hidden and not self.auto_hide:
-                    log.info(f"事件：指定的程序触发隐藏")
-                    self.auto_hide = True
-                    self.hide_with_animation()
-            else:
-                if self.is_hidden and self.auto_hide:
-                    log.info(f"事件：指定的程序触发显示")
-                    self.auto_hide = False
-                    self.show_with_animation()
         except Exception as e:
-            log.warning(f"窗口检测异常: {str(e)}")
+            log.warn(f"窗口检测异常: {str(e)}")
 
     def show_about_window(self):
         """显示关于窗口"""
