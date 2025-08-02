@@ -131,7 +131,7 @@ class xht(QWidget):
             session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
             if session_type == "wayland":
                 self.setAttribute(Qt.WA_NativeWindow, True)
-                flags = Qt.WindowType.Window  # Use a native window type for Wayland support
+                flags = Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool | Qt.WindowType.X11BypassWindowManagerHint
 
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -435,12 +435,6 @@ class xht(QWidget):
     def fcd(self):
         try:
             if platform.system() == "Linux":
-                import os
-                session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
-                if session_type == "wayland":
-                    log.warning("检测到 Wayland 环境，自动隐藏功能可能无法正常工作。")
-                    self.title = ""
-                else:
                     try:
                         ewmh_obj = ewmh.EWMH()
                         active_window = ewmh_obj.getActiveWindow()
