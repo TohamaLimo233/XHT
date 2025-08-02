@@ -3,3 +3,4 @@ loguru
 PySide6
 pygetwindow
 coloredlogs
+ewmh
