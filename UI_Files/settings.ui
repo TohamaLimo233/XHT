@@ -26,11 +26,18 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>570</x>
       <y>550</y>
       <width>100</width>
       <height>38</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
@@ -49,39 +56,30 @@ QPushButton:pressed {
 }</string>
     </property>
     <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>20</y>
-      <width>121</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: &quot;Microsoft YaHei UI&quot;;</string>
-    </property>
-    <property name="text">
-     <string>CheckBox</string>
+     <string>应用</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>450</x>
       <y>550</y>
       <width>100</width>
       <height>38</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
 	font: &quot;Microsoft YaHei UI&quot;;
     color: rgb(0,0,0);
-	background-color: rgb(235, 235, 235);
+	background-color: rgb(193, 193, 193);
     border-radius: 8px;
 }
 
@@ -94,7 +92,72 @@ QPushButton:pressed {
 }</string>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>取消</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>550</y>
+      <width>100</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	font: &quot;Microsoft YaHei UI&quot;;
+    color: rgb(255, 255, 255);
+	background-color: rgb(0, 209, 0);
+    border-radius: 8px;
+}
+
+QPushButton:hover {
+	background-color: rgb(0, 218, 0);
+}
+
+QPushButton:pressed {	
+	background-color: rgb(0, 255, 0);
+}</string>
+    </property>
+    <property name="text">
+     <string>保存</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>520</y>
+      <width>801</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>3</x>
+      <y>540</y>
+      <width>441</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 11pt &quot;Microsoft YaHei UI&quot;;</string>
+    </property>
+    <property name="text">
+     <string>就绪</string>
     </property>
    </widget>
   </widget>

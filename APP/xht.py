@@ -209,8 +209,8 @@ class xht(QWidget):
     def update_weather(self):
         if self.ui_type  == "original":
             weather = self.weather_api.GetWeather()
-            self.weather_label.setText(f"  {weather.get("weather")} {str(weather["temperature"])}{weather["unit"]}")
-            log.info(f"{weather["region"]}的天气数据更新成功")
+            self.weather_label.setText(f"  {weather.get('weather')} {str(weather['temperature'])}{weather['unit']}")
+            log.info(f"{weather['region']}的天气数据更新成功")
         else:
             return
 

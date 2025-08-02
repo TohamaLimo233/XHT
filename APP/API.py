@@ -13,14 +13,19 @@ class WeatherAPI():
 
     def GetLocation(self):
         try:
-            ctb = requests.get(f"https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1", headers=self.headers, timeout=5).json()
+            ctb = requests.get(f"https://api.ip.sb/geoip", headers=self.headers, timeout=5).json()
             return {
-            "latitude": ctb['data']["latitude"],
-            "longitude": ctb['data']["longitude"],                
-            "region": ctb['data']['cityCN']
+            "latitude": ctb["latitude"],
+            "longitude": ctb["longitude"],                
+            "region": ctb['city']
             }
-        except requests.exceptions.RequestException as e:
-            return {}
+        except:
+            ctb = requests.get(f"https://ipwhois.app/json/?format=json", headers=self.headers, timeout=5).json()
+            return {
+            "latitude": ctb["latitude"],
+            "longitude": ctb["longitude"],                
+            "region": ctb['city']
+            }
         
     def GetWeather(self):
         try:
@@ -28,7 +33,9 @@ class WeatherAPI():
             url = f"https://api.open-meteo.com/v1/forecast?latitude={location["latitude"]}&longitude={location["longitude"]}&current=temperature_2m,weather_code&models=cma_grapes_global"
             resp = requests.get(url, headers=self.headers, timeout=8)
             if resp.status_code == 200:
+                #print(resp)
                 data = resp.json()
+                #print(data)
                 weather =  {
                     "region": location["region"],
                     "temperature": data['current']['temperature_2m'],
@@ -37,11 +44,9 @@ class WeatherAPI():
                 }
                 return weather
             else:
-                return {}
+                raise Exception("Failed")
         except Exception as e:
             print(e)
-            return {'error':str(e)}
-            
 
     def ReadWeatherStatus(self):
         with open("res/weather/weather_status.json", "r", encoding="utf-8") as file:
