@@ -192,6 +192,8 @@ class xht(QWidget):
         painter.setPen(Qt.PenStyle.NoPen)
         if platform.system() == "Windows":
             painter.drawRoundedRect(self.rect(), 24, 24)
+        if platform.system() == "Linux":
+            painter.drawRoundedRect(self.rect(), 24, 24)
         if platform.system() == "Darwin":
             painter.drawRoundedRect(self.rect(), 32, 32)
 
