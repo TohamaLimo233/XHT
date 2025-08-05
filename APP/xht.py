@@ -125,13 +125,7 @@ class xht(QWidget):
 
         self.setGeometry(initial_x, self.edge_height, 120, 16)
 
-        # 设置窗口标志并优化 Wayland 支持
         flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
-        if platform.system() == "Linux":
-            session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
-            if session_type == "wayland":
-                self.setAttribute(Qt.WA_NativeWindow, True)
-                flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
@@ -156,15 +150,11 @@ class xht(QWidget):
         else:  # M
             initial_pos = QPoint(current_pos.x(), -self.height())
         
-        # 在 Wayland 环境下避免动画导致窗口不可见
-        if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
-            self.windowHandle().setGeometry(initial_pos.x(), initial_pos.y(), self.width(), self.height())
-        else:
-            self.position_animation.setDuration(250)
-            self.position_animation.setStartValue(initial_pos)
-            self.position_animation.setEndValue(current_pos)
-            self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
-            self.position_animation.start()
+        self.position_animation.setDuration(250)
+        self.position_animation.setStartValue(initial_pos)
+        self.position_animation.setEndValue(current_pos)
+        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.position_animation.start()
 
     def getBackgroundColor(self):
         return self.background_color
@@ -243,15 +233,11 @@ class xht(QWidget):
         if self.position_animation.state() == QPropertyAnimation.Running:
             self.position_animation.stop()
 
-        if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
-            # 修改：使用 current_y 替代 window_start_pos.y() 避免 NoneType 异常
-            self.windowHandle().setGeometry(target_x, current_y, self.width(), self.height())
-        else:
-            self.position_animation.setDuration(250)
-            self.position_animation.setStartValue(current_pos)
-            self.position_animation.setEndValue(target_pos)
-            self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
-            self.position_animation.start()
+        self.position_animation.setDuration(250)
+        self.position_animation.setStartValue(current_pos)
+        self.position_animation.setEndValue(target_pos)
+        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.position_animation.start()
 
     def set_size(self):
         self.layout().activate()
@@ -325,8 +311,6 @@ class xht(QWidget):
                         self.window_start_pos = self.pos()
                     # 实时水平拖动逻辑
                     new_x = self.window_start_pos.x() + delta.x()
-                    if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
-                        self.windowHandle().setGeometry(new_x, self.window_start_pos.y(), self.width(), self.height())
         super().mouseMoveEvent(event)
 
     def mouseDoubleClickEvent(self, event):
