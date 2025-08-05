@@ -295,7 +295,7 @@ class xht(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.drag_start_pos = event.globalPos()
-            self.window_start_pos = self.pos()  # 新增记录窗口初始位置
+            self.window_start_pos = self.pos()
             self.is_dragging = False
         super().mousePressEvent(event)
 
@@ -306,11 +306,10 @@ class xht(QWidget):
                 if not self.is_dragging and (abs(delta.x()) > self.drag_threshold or abs(delta.y()) > self.drag_threshold):
                     self.is_dragging = True
                 if self.is_dragging:
-                    # 如果 window_start_pos 未初始化，则使用当前窗口位置
-                    if self.window_start_pos is None:
-                        self.window_start_pos = self.pos()
-                    # 实时水平拖动逻辑
+
                     new_x = self.window_start_pos.x() + delta.x()
+                    new_y = self.window_start_pos.y() + delta.y()
+                    self.move(new_x, new_y)
         super().mouseMoveEvent(event)
 
     def mouseDoubleClickEvent(self, event):
