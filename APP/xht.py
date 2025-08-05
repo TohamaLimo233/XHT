@@ -244,7 +244,8 @@ class xht(QWidget):
             self.position_animation.stop()
 
         if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
-            self.windowHandle().setGeometry(target_x, self.window_start_pos.y(), self.width(), self.height())
+            # 修改：使用 current_y 替代 window_start_pos.y() 避免 NoneType 异常
+            self.windowHandle().setGeometry(target_x, current_y, self.width(), self.height())
         else:
             self.position_animation.setDuration(250)
             self.position_animation.setStartValue(current_pos)
