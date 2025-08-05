@@ -131,8 +131,7 @@ class xht(QWidget):
             session_type = os.getenv("XDG_SESSION_TYPE", "").lower()
             if session_type == "wayland":
                 self.setAttribute(Qt.WA_NativeWindow, True)
-                flags = Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool | Qt.WindowType.X11BypassWindowManagerHint
-
+                flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
@@ -159,7 +158,7 @@ class xht(QWidget):
         
         # 在 Wayland 环境下避免动画导致窗口不可见
         if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
-            self.move(initial_pos)
+            self.windowHandle().setGeometry(initial_pos.x(), initial_pos.y(), self.width(), self.height())
         else:
             self.position_animation.setDuration(250)
             self.position_animation.setStartValue(initial_pos)
@@ -244,11 +243,14 @@ class xht(QWidget):
         if self.position_animation.state() == QPropertyAnimation.Running:
             self.position_animation.stop()
 
-        self.position_animation.setDuration(250)
-        self.position_animation.setStartValue(current_pos)
-        self.position_animation.setEndValue(target_pos)
-        self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
-        self.position_animation.start()
+        if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
+            self.windowHandle().setGeometry(target_x, self.window_start_pos.y(), self.width(), self.height())
+        else:
+            self.position_animation.setDuration(250)
+            self.position_animation.setStartValue(current_pos)
+            self.position_animation.setEndValue(target_pos)
+            self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
+            self.position_animation.start()
 
     def set_size(self):
         self.layout().activate()
@@ -322,7 +324,8 @@ class xht(QWidget):
                         self.window_start_pos = self.pos()
                     # 实时水平拖动逻辑
                     new_x = self.window_start_pos.x() + delta.x()
-                    self.move(new_x, self.window_start_pos.y())  # 保持原Y坐标不变
+                    if platform.system() == "Linux" and os.getenv("XDG_SESSION_TYPE", "").lower() == "wayland":
+                        self.windowHandle().setGeometry(new_x, self.window_start_pos.y(), self.width(), self.height())
         super().mouseMoveEvent(event)
 
     def mouseDoubleClickEvent(self, event):
