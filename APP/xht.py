@@ -115,7 +115,6 @@ class xht(QWidget):
         self.setMaximumSize(600, 400)
         screen = QApplication.primaryScreen().availableGeometry()
 
-        # 根据 windowpos 设置初始位置为屏幕外
         if self.windowpos == "L":
             initial_x = -self.width()
         elif self.windowpos == "R":
@@ -142,12 +141,11 @@ class xht(QWidget):
         screen = QApplication.primaryScreen().availableGeometry()
         current_pos = self.pos()
         
-        # 根据windowpos确定初始位置
         if self.windowpos == "L":
             initial_pos = QPoint(-self.width(), current_pos.y())
         elif self.windowpos == "R":
             initial_pos = QPoint(screen.width(), current_pos.y())
-        else:  # M
+        else:  
             initial_pos = QPoint(current_pos.x(), -self.height())
         
         self.position_animation.setDuration(250)
@@ -207,16 +205,12 @@ class xht(QWidget):
                 #self.a=self.a+510
                 #self.time_label.setText(str(self.a))
                 self.set_size()
-        else:
-            return 
 
     def update_weather(self):
         if self.ui_type  == "original":
             weather = self.weather_api.GetWeather()
             self.weather_label.setText(f"  {weather.get('weather')} {str(weather['temperature'])}{weather['unit']}")
             log.info(f"{weather['region']}的天气数据更新成功")
-        else:
-            return
 
     def update_position(self):
         screen = QApplication.primaryScreen().availableGeometry()
@@ -243,11 +237,9 @@ class xht(QWidget):
         self.layout().activate()
         self.updateGeometry()
         
-        # 获取建议尺寸时考虑布局边距
         content_size = self.layout().sizeHint().expandedTo(self.minimumSize())
         content_size = content_size.boundedTo(self.maximumSize())
         
-        # 尺寸未变化时直接返回
         if self.size() == content_size:
             return
         
@@ -306,10 +298,8 @@ class xht(QWidget):
                 if not self.is_dragging and (abs(delta.x()) > self.drag_threshold or abs(delta.y()) > self.drag_threshold):
                     self.is_dragging = True
                 if self.is_dragging:
-
                     new_x = self.window_start_pos.x() + delta.x()
-                    new_y = self.window_start_pos.y() + delta.y()
-                    self.move(new_x, new_y)
+                    self.move(new_x, self.window_start_pos.y()) 
         super().mouseMoveEvent(event)
 
     def mouseDoubleClickEvent(self, event):
@@ -433,7 +423,6 @@ class xht(QWidget):
                         log.warning(f"Linux 窗口检测异常: {str(e)}")
                         self.title = ""
             else:
-                # 原有 Windows/macOS 逻辑
                 active_window = gw.getActiveWindow()
                 if not active_window:
                     return
