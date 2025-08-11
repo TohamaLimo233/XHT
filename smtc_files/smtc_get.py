@@ -24,7 +24,7 @@ async def get_media_info():
     try:
         session = await _get_current_session()
         if not session:
-            return _create_error_response("No media is playing.", 900)
+            return _create_error_response("No media is playing.", 800)
 
         media_props = await session.try_get_media_properties_async()
         playback_info = session.get_playback_info()
