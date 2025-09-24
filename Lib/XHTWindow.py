@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
 from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
 import os, subprocess, threading
@@ -9,10 +9,6 @@ from Lib import LogMaker, Config, Element
 import UI.About as AboutUI
 
 log = LogMaker.logger()
-if platform.system() == "Windows" or platform.system() == "Darwin":
-    import pygetwindow as gw
-elif platform.system() == "Linux":
-    from ewmh import ewmh
 
 class Window(QWidget):
     def __init__(self, config_path):        
@@ -118,8 +114,6 @@ class Window(QWidget):
         self.setWindowTitle('XHT')
 
         self.original_ui()
-        #self.html_ui()
-        threading.Thread(target=self.update_weather).start()
         self.reg_timers()
         self.tray_icon.show()
 
@@ -166,14 +160,6 @@ class Window(QWidget):
         self.ortime_timer.timeout.connect(self.update_time)
         self.ortime_timer.start(1500)
 
-        self.check_wea = QTimer(self)
-        self.check_wea.timeout.connect(self.update_weather)
-        self.check_wea.start(720000)
-
-        self.fullscreen_check_timer = QTimer(self)
-        self.fullscreen_check_timer.timeout.connect(self.fcd)
-        self.fullscreen_check_timer.start(2000)
-
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -195,12 +181,6 @@ class Window(QWidget):
                 #self.a=self.a*10+1
                 #self.time_label.setText(str(self.a))
                 self.set_size()
-
-    def update_weather(self):
-        if self.ui_type  == "original":
-            weather = self.weather_api.GetWeather()
-            self.weather_label.setText(f"  {weather.get('weather')} {str(weather['temperature'])}{weather['unit']}")
-            log.info(f"{weather['region']}的天气数据更新成功")
 
     def update_position(self):
         screen = QApplication.primaryScreen().availableGeometry()
@@ -251,26 +231,13 @@ class Window(QWidget):
         self.ui_type = "original"
         self.time_label = Element.LabelElement(self)
         self.time_label.setText(QTime.currentTime().toString("hh:mm"))
-        self.weather_label = QLabel(self)
-        self.weather_label.setText("获取信息中")
-        self.weather_label.installEventFilter(self)
         
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.weather_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.global_layout = QHBoxLayout()
         self.global_layout.addWidget(self.time_label)
-        self.global_layout.addWidget(self.weather_label)
 
         self.setLayout(self.global_layout)
-        self.set_size()
-    def html_ui(self):
-        log.info("UI模式切换：html")
-        self.ui_type = "html"
-        self.html_text = QLabel(self)
-        self.html_text.setText("<html><head><style>body { color: white; font-size: 14px; }</style></head><body>这是HTML模式的文本</body></html>")
-        self.html_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.global_layout.addWidget(self.html_text)
         self.set_size()
 
     def mousePressEvent(self, event):
@@ -397,30 +364,6 @@ class Window(QWidget):
 
     def closeEvent(self, event):
         event.ignore()  # 忽略关闭事件
-
-    def fcd(self):
-        try:
-            if platform.system() == "Linux":
-                    try:
-                        ewmh_obj = ewmh.EWMH()
-                        active_window = ewmh_obj.getActiveWindow()
-                        if active_window:
-                            self.title = ewmh_obj.getWmName(win=active_window)
-                        else:
-                            self.title = ""
-                    except Exception as e:
-                        log.warning(f"Linux 窗口检测异常: {str(e)}")
-                        self.title = ""
-            else:
-                active_window = gw.getActiveWindow()
-                if not active_window:
-                    return
-                try:
-                    self.title = active_window.title
-                except AttributeError:
-                    self.title = ""
-        except Exception as e:
-            log.warning(f"窗口检测异常: {str(e)}")
 
     def show_about_window(self):
         """显示关于窗口"""
