@@ -21,7 +21,7 @@ class logger:
     def info(self, msg):
         log.info(msg)
     def warn(self, msg):
-        log.warn(msg)
+        log.warning(msg)
     def error(self, msg):
         log.error(msg)
     def critical(self, msg):

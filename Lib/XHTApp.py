@@ -3,8 +3,7 @@ from PySide6.QtWidgets import QApplication
 import os
 import platform
 
-import Lib.LogMaker as LogMaker
-import Lib.XHTWindow as XHTWindow
+from Lib import LogMaker, XHTWindow
 
 #Banner
 print("██   ██ ██   ██ ████████ ")
@@ -24,6 +23,8 @@ PID：{os.getpid()}""")
 class Example(QApplication):
     def __init__(self):
         super().__init__(sys.argv)
+        self.work_path = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = os.path.join(self.work_path, "config")
         self.setStyleSheet("""
                           QMenu {
                           background-color: black;
