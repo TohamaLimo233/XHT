@@ -17,9 +17,7 @@ class Ui_AboutWindow(object):
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
         self.label.setPixmap(QPixmap(u"res/icon/xht.png"))
-        self.label.setScaledContents(False)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setWordWrap(False)
 
         self.verticalLayout_2.addWidget(self.label)
 
@@ -31,21 +29,12 @@ class Ui_AboutWindow(object):
         font.setFamilies([u"Microsoft YaHei UI"])
         font.setPointSize(24)
         font.setBold(True)
-        font.setItalic(False)
         self.label_2.setFont(font)
-        self.label_2.setStyleSheet(u"")
-        self.label_2.setTextFormat(Qt.TextFormat.AutoText)
-        self.label_2.setScaledContents(False)
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setOpenExternalLinks(True)
 
         self.verticalLayout.addWidget(self.label_2)
 
-        self.label_3 = QLabel(self.centralwidget)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.verticalLayout.addWidget(self.label_3)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -57,13 +46,6 @@ class Ui_AboutWindow(object):
 
         self.horizontalLayout.addWidget(self.label_5)
 
-        self.label_4 = QLabel(self.centralwidget)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setTextFormat(Qt.TextFormat.RichText)
-        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label_4.setOpenExternalLinks(True)
-
-        self.horizontalLayout.addWidget(self.label_4)
 
         self.label_6 = QLabel(self.centralwidget)
         self.label_6.setObjectName(u"label_6")
@@ -73,23 +55,16 @@ class Ui_AboutWindow(object):
 
         self.horizontalLayout.addWidget(self.label_6)
 
-
         self.verticalLayout.addLayout(self.horizontalLayout)
-
-
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
         AboutWindow.setCentralWidget(self.centralwidget)
-
         self.retranslateUi(AboutWindow)
-
         QMetaObject.connectSlotsByName(AboutWindow)
 
     def retranslateUi(self, AboutWindow):
         AboutWindow.setWindowTitle(QCoreApplication.translate("AboutWindow", u"\u5173\u4e8e", None))
         self.label.setText("")
         self.label_2.setText(QCoreApplication.translate("AboutWindow", u"\u5c0f\u9ed1\u6761", None))
-        self.label_3.setText(QCoreApplication.translate("AboutWindow", u"0.0.1 Dev", None))
         self.label_5.setText(QCoreApplication.translate("AboutWindow", u"<a href=\"https://github.com/TohamaLimo233/XHT\" title=\"Github\">Github</a>", None))
-        self.label_4.setText(QCoreApplication.translate("AboutWindow", u"<p><a href=\"https://github.com/TohamaLimo233/XHT/blob/main/LICENSE\" title=\"开源协议\">开源协议</a>", None))
         self.label_6.setText(QCoreApplication.translate("AboutWindow", u"<a href=\"https://classwidgets.rinlit.cn\" title=\"Github\">ClassWidgets(\u53cb\u94fe)</a>", None))
