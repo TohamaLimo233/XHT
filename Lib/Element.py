@@ -1,19 +1,36 @@
 from PySide6.QtWidgets import QLabel
+import uuid
 
 class LabelElement(QLabel):
-    def __init__(self, parent=None, order:int=1, text:str=""):
+    def __init__(self, parent=None, text:str=""):
         super().__init__(parent)
-        self.order=0
-        self.SetOrder(order)
-        self.setText(text)
+        self.setText(text) 
+        self.uuid = str(uuid.uuid4())
+
+    def getUUID(self):
+        return self.uuid
     
-    def SetOrder(self, order:int=1):
-        """设置显示顺序"""
-        if self.order < 0:
-            raise ValueError("order must be a value between 0 and 10")
+class ElementList(list):
+    def __init__(self):
+        super().__init__()
+
+    def addElement(self, element:LabelElement):
+        self.append(element)
+    
+    def getElements(self):
+        return self
+    
+    def setElement(self, new_element:LabelElement, element_id:str = None):
+        if element_id is None:
+            element_id = new_element.uuid
+        for i, e in enumerate(self):
+            if e.uuid == element_id:
+                self[i] = new_element
+                return
+        raise ValueError("Element not found in the list.")
+
+    def delElement(self, element:LabelElement):
+        if element in self:
+            self.remove(element)
         else:
-            self.order=order
-        return
-    def GetOrder(self):
-        """获取显示顺序"""
-        return self.order
+            raise ValueError("Element not found in the list.")

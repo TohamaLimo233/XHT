@@ -1,15 +1,17 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox
-from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon, QAction
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QSystemTrayIcon, QMenu, QMessageBox, QMainWindow
+from PySide6.QtGui import Qt, QColor, QPainter, QBrush, QIcon
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QPoint, QTimer, QTime, Property
+import os, subprocess, threading
 import platform
 
 from Lib import LogMaker, Config, Element
+import UI.About as AboutUI
 
 log = LogMaker.logger()
 
 class Window(QWidget):
-    def __init__(self, config_path, elements : Element.ElementList =[]):        
+    def __init__(self, config_path):        
         super().__init__()
         #先决条件
         sys.excepthook = self.handle_exception
@@ -17,8 +19,8 @@ class Window(QWidget):
         self.config = Config.load_config(config_path)
 
         #布局
-        self.global_layout = QHBoxLayout()
-        self.global_layout.setGeometry
+        self.global_layout = None # 全局布局
+        self.ui_type  = "original" #预设UI种类
 
         #动画
         self.size_animation = QPropertyAnimation(self, b"size")  # 初始化尺寸动画
@@ -46,6 +48,7 @@ class Window(QWidget):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(QIcon("res/icon/common.ico"))
         self.tray_icon.setToolTip("小黑条-正常运行中")
+        self.tray_icon.activated.connect(self.handle_tray_activation)
 
         # 加载样式表
         self.setStyleSheet("""
@@ -55,44 +58,43 @@ class Window(QWidget):
                            font-weight: bold;
                            }""")
           
-        self.create_tray_menu()
-        # 延迟设置元素列表，确保窗口和布局已正确初始化
-        self.elements_to_set = elements
+        self.create_tray_menu()        
+        self.initUI()
 
         #测试用
         #self.a=0
 
     def create_tray_menu(self):
-        self.global_menu = QMenu()
-        restore_action = self.global_menu.addAction("显示/隐藏")
-        quit_action = self.global_menu.addAction("退出")
+        menu = QMenu()
+        restore_action = menu.addAction("显示/隐藏")
+        about_action = menu.addAction("关于")
+        quit_action = menu.addAction("退出")
         
-        quit_action.triggered.connect(self.Quit)
-        restore_action.triggered.connect(self.ToggleWindow)
+        about_action.triggered.connect(self.show_about_window)
+        quit_action.triggered.connect(self.quit_app)
+        restore_action.triggered.connect(self.toggle)
         
-        self.tray_icon.setContextMenu(self.global_menu)
+        self.tray_icon.setContextMenu(menu)
 
-    def AddTrayMenu(self, action:str, func:callable):
-        """添加托盘菜单项"""
-        self.global_menu.addAction(action).triggered.connect(func)
-        self.tray_icon.setContextMenu(self.global_menu)
-
-    def DeleteTrayMenu(self, action:str):
-        """删除托盘菜单项"""
-        self.global_menu.removeAction(self.global_menu.findChild(QAction, action))
-
-    def Quit(self):
-        sys.exit(0)
-
-    def ToggleWindow(self):
+    def toggle(self):
         if self.is_hidden:
-            self.ShowWindow()
+            log.info("事件：托盘图标点击，显示窗口")
+            self.show_with_animation()
         else:
-            self.HideWindow()
+            log.info("事件：托盘图标点击，隐藏窗口")
+            self.hide_with_animation()
+    def handle_tray_activation(self, reason):
+        return  
+
+    def quit_app(self):
+        log.info("程序退出")
+        try:
+            subprocess.Popen(["taskkill", "/F", "/PID", str(os.getpid())])
+        except:
+            subprocess.Popen(["kill", str(os.getpid())])
 
     def initUI(self):
         log.info("程序正在启动")
-        # 调整最小尺寸以适应字体大小
         self.setMinimumSize(120, 16)
         self.setMaximumSize(600, 400)
         screen = QApplication.primaryScreen().availableGeometry()
@@ -104,21 +106,16 @@ class Window(QWidget):
         else:
             initial_x = (screen.width() - self.width()) // 2
 
-        # 调整初始窗口位置的y坐标以适应新的最小高度
         self.setGeometry(initial_x, self.edge_height, 120, 16)
 
         flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
         self.setWindowFlags(flags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle('XHT')
-        
-        self.setLayout(self.global_layout)
 
+        self.original_ui()
+        self.reg_timers()
         self.tray_icon.show()
-        
-        # 在窗口初始化完成后再设置元素列表
-        self.setElementList(self.elements_to_set)
-        self.elements_to_set = None
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -158,14 +155,10 @@ class Window(QWidget):
     def show_error_window(self, msg):
         QMessageBox.critical(self,"严重错误",  msg)
         self.quit_app()
-
-    def addTimer(self, interval:int, func:callable):
-        """添加定时器"""
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(func)
-        self.timer.start(interval)
-
-        
+    def reg_timers(self):
+        self.ortime_timer = QTimer(self)
+        self.ortime_timer.timeout.connect(self.update_time)
+        self.ortime_timer.start(1500)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -180,11 +173,14 @@ class Window(QWidget):
             painter.drawRoundedRect(self.rect(), 32, 32)
 
     def update_time(self):
-        self.current_time = QTime.currentTime().toString("hh:mm")    
-        self.time_label.setText(self.current_time)
-        #self.a=self.a*10+1
-        #self.time_label.setText(str(self.a))
-        self.AutoSetSize()
+        if self.ui_type  == "original":
+            self.current_time = QTime.currentTime().toString("hh:mm")
+            if  self.ui_type == "original":
+                
+                self.time_label.setText(self.current_time)
+                #self.a=self.a*10+1
+                #self.time_label.setText(str(self.a))
+                self.set_size()
 
     def update_position(self):
         screen = QApplication.primaryScreen().availableGeometry()
@@ -207,17 +203,12 @@ class Window(QWidget):
         self.position_animation.setEasingCurve(QEasingCurve.OutQuad)
         self.position_animation.start()
 
-    def AutoSetSize(self):
-        self.global_layout.activate()
+    def set_size(self):
+        self.layout().activate()
         self.updateGeometry()
         
-        # 获取内容建议尺寸并确保足够显示时间文本
-        content_size = self.global_layout.sizeHint().expandedTo(self.minimumSize())
+        content_size = self.layout().sizeHint().expandedTo(self.minimumSize())
         content_size = content_size.boundedTo(self.maximumSize())
-        
-        # 确保宽度至少能显示"hh:mm"格式的时间
-        min_width = max(content_size.width(), 80)
-        content_size.setWidth(min_width)
         
         if self.size() == content_size:
             return
@@ -234,6 +225,20 @@ class Window(QWidget):
         
         self.size_animation.finished.connect(on_finish)
         self.size_animation.start()
+
+    def original_ui(self):
+        log.info("UI模式切换：original")
+        self.ui_type = "original"
+        self.time_label = Element.LabelElement(self)
+        self.time_label.setText(QTime.currentTime().toString("hh:mm"))
+        
+        self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.global_layout = QHBoxLayout()
+        self.global_layout.addWidget(self.time_label)
+
+        self.setLayout(self.global_layout)
+        self.set_size()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -255,11 +260,8 @@ class Window(QWidget):
 
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
-            log.info("事件：左键双击")
-            self.ToggleWindow()
+            self.toggle()
         super().mouseDoubleClickEvent(event)
-    
-
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.is_dragging:
@@ -280,7 +282,7 @@ class Window(QWidget):
         self.is_dragging = False
         super().mouseReleaseEvent(event)
 
-    def ShowWindow(self):
+    def show_with_animation(self):
         log.info("事件：显示")
         if self.is_hiding or not self.is_hidden:
             return
@@ -323,7 +325,7 @@ class Window(QWidget):
         self.show_animation.finished.connect(on_finished)
         self.show_animation.start()
 
-    def HideWindow(self):
+    def hide_with_animation(self):
         log.info("事件：隐藏")
         if self.is_hiding:
             return
@@ -363,40 +365,25 @@ class Window(QWidget):
     def closeEvent(self, event):
         event.ignore()  # 忽略关闭事件
 
-    def RefreshConfig(self, config_path):
+    def show_about_window(self):
+        """显示关于窗口"""
+        
+        self.about_window = QMainWindow()
+        ui = AboutUI.Ui_AboutWindow()
+        ui.setupUi(self.about_window)
+        log.info("事件：显示关于窗口")
+        self.about_window.show()
+
+    def refresh(self, config_path):
         """刷新窗口"""
-        self.config = Config.load_config(config_path)
-        self.edge_height = self.config.get("edge_height")  # 边缘
-        self.horizontal_edge_margin = self.config.get("horizontal_edge_margin")  # 水平方向边距
-        self.windowpos = self.config.get("windowpos")  # 窗口位置
-        self.drag_threshold = self.config.get("drag_threshold")  # 拖动触发阈值
-        self.update_position()
-        self.AutoSetSize()
-
-    def setElementList(self, elements: Element.ElementList = None):
-        # 清除现有布局中的所有元素
-        while self.global_layout.count():
-            item = self.global_layout.takeAt(0)
-            widget = item.widget()
-            if widget:
-                widget.deleteLater()
-        
-        # 修改：正确处理传入的elements参数
-        if elements is None or len(elements) == 0:
-            self.default_element()
-            elements = Element.ElementList()
-            elements.addElement(self.time_label)
-        # 修改：直接使用elements，因为ElementList本身就是list
-        
-        # 添加：确保elements是可迭代的
-        for element in elements:
-            self.global_layout.addWidget(element)
-            element.show()
-        self.AutoSetSize()
-
-
-    def default_element(self):
-        self.time_label = Element.LabelElement(self)
-        self.time_label.setText(QTime.currentTime().toString("hh:mm"))
-        self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.addTimer(1000, self.update_time)
+        if self.ui_type == "original":
+            self.config = Config.load_config(config_path)
+            self.edge_height = self.config.get("edge_height")  # 边缘
+            self.horizontal_edge_margin = self.config.get("horizontal_edge_margin")  # 水平方向边距
+            self.windowpos = self.config.get("windowpos")  # 窗口位置
+            self.drag_threshold = self.config.get("drag_threshold")  # 拖动触发阈值
+            self.fullscreen_apps = self.config.get("auto_hide_apps")
+            self.update_position()
+            self.set_size()
+            self.update_time()
+            self.update_weather()

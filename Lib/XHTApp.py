@@ -42,6 +42,8 @@ class Example(QApplication):
                           background-color: #e0e0e0;
                           }""")
 
-    def run(self, window: XHTWindow.Window):
-        window.show()
+    def run(self, inwindow: XHTWindow.Window):
+        self.window=inwindow
+        self.window.initUI()
+        self.window.show()
         sys.exit(self.exec())
